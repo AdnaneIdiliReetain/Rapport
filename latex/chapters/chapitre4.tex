@@ -1,0 +1,188 @@
+% Chapitre 4: Intégration et Chargement des Données
+
+\chapter{Intégration et Chargement des Données}
+
+\section{Initial Data Load Framework (ACE-5)}
+
+\begin{mdframed}[backgroundcolor=lightgreen!20, linewidth=1pt]
+Le chargement initial des données historiques constitue une étape critique du projet AMIgo, nécessitant une approche méthodique pour garantir l'intégrité et la qualité des données migrées vers le Référentiel Client Unifié.
+\end{mdframed}
+
+\subsection{Stratégie de Migration}
+
+La stratégie de migration a été conçue selon une approche progressive par phases :
+
+\begin{center}
+\begin{tabular}{|>{\bfseries}p{3cm}|p{5cm}|p{5.5cm}|}
+\hline
+\rowcolor{lightblue} Phase & Périmètre & Approche \\
+\hline
+Phase 1 & Données clients Cegid Y2 & Migration complète avec déduplication préalable \\
+\hline
+Phase 2 & Données clients Shopify & Réconciliation avec les profils existants et création des nouveaux profils \\
+\hline
+Phase 3 & Historique des achats & Rattachement aux profils clients unifiés \\
+\hline
+Phase 4 & Données de consentement & Consolidation selon la règle du consentement le plus restrictif \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection{Framework ETL Personnalisé}
+
+Un framework ETL (Extract, Transform, Load) sur mesure a été développé pour orchestrer le processus de migration :
+
+\begin{itemize}
+    \item \textbf{Extraction} : Connecteurs spécifiques pour Cegid Y2 et Shopify avec pagination et gestion des timeouts
+    \item \textbf{Transformation} : Pipeline de nettoyage, normalisation et enrichissement des données
+    \item \textbf{Chargement} : Mécanisme de chargement par lots avec validation et journalisation
+    \item \textbf{Réconciliation} : Algorithmes de matching pour identifier les doublons inter-systèmes
+\end{itemize}
+
+\section{Initial Integration Preparation (ACE-4)}
+
+La préparation de l'intégration initiale a impliqué la mise en place des fondations techniques nécessaires à l'interopérabilité des systèmes.
+
+\subsection{Architecture d'Intégration}
+
+\begin{center}
+\begin{tabular}{|>{\bfseries}p{4cm}|p{9.5cm}|}
+\hline
+\rowcolor{lightblue} Composant & Fonction \\
+\hline
+API Gateway & Point d'entrée unique sécurisé pour toutes les intégrations \\
+\hline
+MuleSoft ESB & Orchestration des flux de données entre les systèmes \\
+\hline
+File d'attente & Gestion asynchrone des messages pour garantir la résilience \\
+\hline
+Service de transformation & Conversion des formats de données entre systèmes \\
+\hline
+Monitoring & Supervision en temps réel des flux d'intégration \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection{Sécurisation des Échanges}
+
+\begin{mdframed}[backgroundcolor=lightgreen!20, linewidth=1pt]
+La sécurité des données a été une priorité absolue dans la conception de l'architecture d'intégration :
+
+\begin{itemize}
+    \item Authentification mutuelle TLS pour tous les échanges inter-systèmes
+    \item Chiffrement des données sensibles en transit et au repos
+    \item Tokenisation des identifiants clients dans les échanges
+    \item Journalisation exhaustive des accès et modifications
+    \item Mécanismes de détection d'intrusion et d'anomalies
+\end{itemize}
+\end{mdframed}
+
+\section{CRM - Data Cloud (ACE-69)}
+
+Salesforce Data Cloud a été implémenté comme couche d'unification et d'enrichissement des données client.
+
+\subsection{Fonctionnalités Implémentées}
+
+\begin{center}
+\begin{tabular}{|>{\bfseries}p{4cm}|p{9.5cm}|}
+\hline
+\rowcolor{lightblue} Fonctionnalité & Description \\
+\hline
+Identity Resolution & Réconciliation des identités clients à travers les canaux \\
+\hline
+Data Harmonization & Standardisation et enrichissement automatique des données \\
+\hline
+Segmentation Avancée & Création de segments dynamiques basés sur comportements et attributs \\
+\hline
+Activation Omnicanale & Distribution des données client vers les canaux d'activation \\
+\hline
+Insights en Temps Réel & Génération d'insights actionnables sur les comportements clients \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection{Modèle de Données Unifié}
+
+Le modèle de données dans Data Cloud a été conçu pour offrir une vue client enrichie :
+
+\begin{itemize}
+    \item \textbf{Profil Unifié} : Consolidation des attributs clients provenant de toutes les sources
+    \item \textbf{Graphe d'Identité} : Cartographie des identifiants clients à travers les canaux
+    \item \textbf{Timeline Comportementale} : Historique chronologique des interactions client
+    \item \textbf{Scores Prédictifs} : Indicateurs calculés de propension à l'achat, risque d'attrition, etc.
+    \item \textbf{Affinités} : Préférences produits et catégories déduites du comportement
+\end{itemize}
+
+\section{CRM - Orders \& Line Items (ACE-70)}
+
+L'intégration des commandes et des lignes de commande permet une vision complète de l'historique d'achat client.
+
+\subsection{Structure des Objets de Transaction}
+
+\begin{center}
+\begin{tabular}{|>{\bfseries}p{3.5cm}|p{4cm}|p{6cm}|}
+\hline
+\rowcolor{lightblue} Objet & Relation & Attributs Clés \\
+\hline
+Order & Parent de Line Item, enfant d'Account & Date, montant total, canal, devise, statut \\
+\hline
+Order Line Item & Enfant d'Order, lié à Product & Produit, quantité, prix unitaire, remise \\
+\hline
+Product & Référencé par Line Item & SKU, catégorie, collection, saison \\
+\hline
+Payment & Enfant d'Order & Méthode, montant, statut, date \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection{Synchronisation Bidirectionnelle}
+
+\begin{mdframed}[backgroundcolor=lightgreen!20, linewidth=1pt]
+La synchronisation des commandes a été implémentée de manière bidirectionnelle :
+
+\begin{itemize}
+    \item \textbf{Cegid Y2 → Salesforce} : Synchronisation en temps réel des achats en boutique
+    \item \textbf{Shopify → Salesforce} : Intégration des commandes e-commerce via webhooks
+    \item \textbf{Salesforce → Cegid Y2} : Enrichissement des profils clients en boutique
+    \item \textbf{Salesforce → Shopify} : Mise à jour des préférences et consentements
+\end{itemize}
+\end{mdframed}
+
+\section{Défis Techniques et Résolution}
+
+\subsection{Gestion des Volumes de Données}
+
+Le projet a dû faire face à des volumes importants de données historiques :
+
+\begin{center}
+\begin{tabular}{|>{\bfseries}p{4cm}|p{3cm}|p{6.5cm}|}
+\hline
+\rowcolor{lightblue} Type de Données & Volume & Solution Implémentée \\
+\hline
+Profils clients & 1.2M & Chargement par lots avec fenêtres de maintenance \\
+\hline
+Transactions & 3.5M & Migration incrémentale par tranches temporelles \\
+\hline
+Interactions & 8.7M & Archivage des données anciennes avec rétention sélective \\
+\hline
+Produits & 45K & Synchronisation complète avec gestion des versions \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection{Résolution des Problèmes d'Intégration}
+
+\begin{mdframed}[backgroundcolor=lightgreen!20, linewidth=1pt]
+Plusieurs défis d'intégration ont été surmontés durant les sprints 6-7 :
+
+\begin{itemize}
+    \item \textbf{Problème} : Incohérences dans les formats de date entre systèmes\\
+      \textbf{Solution} : Normalisation systématique en UTC avec conversion contextuelle
+    \item \textbf{Problème} : Latence élevée lors des pics de charge\\
+      \textbf{Solution} : Implémentation d'un système de file d'attente prioritaire
+    \item \textbf{Problème} : Pertes de connexion avec Cegid Y2\\
+      \textbf{Solution} : Mécanisme de retry exponentiel avec circuit breaker
+    \item \textbf{Problème} : Doublons de transactions lors des synchronisations\\
+      \textbf{Solution} : Système d'idempotence basé sur des identifiants composites
+\end{itemize}
+\end{mdframed}

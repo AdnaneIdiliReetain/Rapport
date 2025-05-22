@@ -1,0 +1,224 @@
+% Chapitre 3: Référentiel Client Unifié (RCU)
+
+\chapter{Référentiel Client Unifié (RCU)}
+
+\section{Conception du Modèle de Données Client}
+
+\begin{mdframed}[backgroundcolor=lightgreen!20, linewidth=1pt]
+Le Référentiel Client Unifié (RCU) constitue le cœur du projet AMIgo, permettant de centraliser et d'harmoniser toutes les données clients provenant des différents canaux. Sa conception a nécessité une analyse approfondie des besoins métier et des contraintes techniques pour garantir une vision client à 360°.
+\end{mdframed}
+
+\subsection{Architecture du Modèle de Données}
+
+L'architecture du RCU repose sur plusieurs objets Salesforce interconnectés :
+
+\begin{center}
+\begin{tabular}{|>{\bfseries}p{4cm}|p{9.5cm}|}
+\hline
+\rowcolor{lightblue} Objet & Description \\
+\hline
+Account & Entité centrale représentant le client avec ses informations d'identification et de contact \\
+\hline
+Store & Représentation des boutiques physiques avec leurs caractéristiques et zones de chalandise \\
+\hline
+Sales Associate & Profils des conseillers de vente avec leurs attributions et historiques de performance \\
+\hline
+Consent & Gestion des consentements RGPD avec historisation des modifications \\
+\hline
+Order & Historique des achats cross-canal avec détails des transactions \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection{Modélisation des Relations}
+
+Les relations entre les différents objets ont été conçues pour faciliter les requêtes métier tout en maintenant l'intégrité des données :
+
+\begin{itemize}
+    \item Relation 1-n entre Account et Order pour l'historique d'achat
+    \item Relation n-n entre Account et Store via un objet de jonction pour suivre les préférences de boutique
+    \item Relation n-n entre Account et Sales Associate pour la gestion de la clientèle
+    \item Relation 1-n entre Account et Consent pour le suivi des consentements marketing
+\end{itemize}
+
+\section{CRM RCU - Account Object (ACE-24)}
+
+L'objet Account est la pierre angulaire du RCU, centralisant toutes les informations clients essentielles.
+
+\subsection{Structure de l'Objet Account}
+
+\begin{center}
+\begin{tabular}{|>{\bfseries}p{4cm}|p{4cm}|p{5.5cm}|}
+\hline
+\rowcolor{lightblue} Champ & Type & Description \\
+\hline
+Customer ID & Texte (External ID) & Identifiant unique du client généré par le système \\
+\hline
+Email & Email & Adresse email principale du client (unique) \\
+\hline
+First Name & Texte & Prénom du client \\
+\hline
+Last Name & Texte & Nom de famille du client \\
+\hline
+Phone & Téléphone & Numéro de téléphone principal \\
+\hline
+Preferred Language & Liste de sélection & Langue de communication préférée \\
+\hline
+Preferred Store & Référence & Boutique préférée du client \\
+\hline
+Customer Origin & Liste de sélection & Canal d'acquisition (Retail, E-commerce, Wholesale) \\
+\hline
+Customer Tier & Liste de sélection & Segment client (Standard, Premium, VIP) \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection{Mécanismes de Déduplication}
+
+\begin{mdframed}[backgroundcolor=lightgreen!20, linewidth=1pt]
+La déduplication des profils clients est un enjeu critique pour le RCU. Plusieurs mécanismes ont été implémentés :
+
+\begin{itemize}
+    \item Algorithme de matching basé sur l'email, le téléphone et l'adresse postale
+    \item Système de scoring de similarité pour les cas ambigus
+    \item Processus de validation manuelle pour les cas complexes
+    \item Historisation des fusions pour traçabilité
+\end{itemize}
+\end{mdframed}
+
+\section{CRM RCU - Stores (ACE-10)}
+
+L'objet Store permet de gérer le réseau de boutiques physiques et leurs interactions avec les clients.
+
+\subsection{Structure de l'Objet Store}
+
+\begin{center}
+\begin{tabular}{|>{\bfseries}p{4cm}|p{4cm}|p{5.5cm}|}
+\hline
+\rowcolor{lightblue} Champ & Type & Description \\
+\hline
+Store ID & Texte (External ID) & Identifiant unique de la boutique \\
+\hline
+Store Name & Texte & Nom commercial de la boutique \\
+\hline
+Address & Adresse & Adresse physique complète \\
+\hline
+Phone & Téléphone & Numéro de contact de la boutique \\
+\hline
+Email & Email & Adresse email de la boutique \\
+\hline
+Opening Hours & Texte long & Horaires d'ouverture \\
+\hline
+Store Manager & Référence & Responsable de la boutique \\
+\hline
+Region & Liste de sélection & Zone géographique (Europe, Asie, Amériques) \\
+\hline
+\end{tabular}
+\end{center}
+
+\section{CRM RCU - GDPR Process (ACE-13)}
+
+La conformité RGPD est un aspect fondamental du projet AMIgo, nécessitant des mécanismes robustes de gestion des consentements et des droits des clients.
+
+\subsection{Modèle de Consentement}
+
+Le modèle de consentement implémenté permet une gestion granulaire des préférences clients :
+
+\begin{center}
+\begin{tabular}{|>{\bfseries}p{4cm}|p{9.5cm}|}
+\hline
+\rowcolor{lightblue} Type de Consentement & Description \\
+\hline
+Email Marketing & Consentement pour recevoir des communications marketing par email \\
+\hline
+SMS Marketing & Consentement pour recevoir des communications marketing par SMS \\
+\hline
+Téléphone & Consentement pour être contacté par téléphone \\
+\hline
+Courrier Postal & Consentement pour recevoir des communications par voie postale \\
+\hline
+Analyse des Données & Consentement pour l'analyse comportementale et la personnalisation \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection{Processus de Gestion des Droits}
+
+\begin{mdframed}[backgroundcolor=lightgreen!20, linewidth=1pt]
+Un workflow automatisé a été implémenté pour traiter les demandes relatives aux droits RGPD :
+
+\begin{itemize}
+    \item Droit d'accès : génération automatique d'un rapport des données personnelles
+    \item Droit de rectification : interface dédiée pour la mise à jour des informations
+    \item Droit à l'oubli : processus d'anonymisation avec validation multi-niveaux
+    \item Droit d'opposition : mécanisme de désabonnement avec confirmation
+    \item Droit à la portabilité : export des données au format standard
+\end{itemize}
+\end{mdframed}
+
+\section{CRM RCU - Data Merge Process (ACE-44)}
+
+Le processus de fusion des données est crucial pour maintenir l'intégrité du RCU lors de l'identification de doublons.
+
+\subsection{Algorithme de Fusion}
+
+L'algorithme de fusion implémenté suit une logique de priorisation des sources de données :
+
+\begin{center}
+\begin{tabular}{|>{\bfseries}p{3cm}|p{3cm}|p{7.5cm}|}
+\hline
+\rowcolor{lightblue} Source & Priorité & Justification \\
+\hline
+Cegid Y2 & Haute & Données collectées en face-à-face avec vérification d'identité \\
+\hline
+Shopify & Moyenne & Données déclaratives avec validation d'email \\
+\hline
+Formulaires Web & Basse & Données non vérifiées, potentiellement incomplètes \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection{Traçabilité des Fusions}
+
+Chaque fusion de profils clients est documentée dans un journal d'audit contenant :
+
+\begin{itemize}
+    \item Identifiants des profils source et cible
+    \item Horodatage de la fusion
+    \item Utilisateur ou processus ayant initié la fusion
+    \item Règles de décision appliquées
+    \item Champs modifiés avec valeurs avant/après
+\end{itemize}
+
+\section{Résultats et Défis}
+
+\subsection{Métriques de Qualité des Données}
+
+\begin{center}
+\begin{tabular}{|>{\bfseries}p{5cm}|p{3cm}|p{5cm}|}
+\hline
+\rowcolor{lightblue} Indicateur & Résultat & Impact Business \\
+\hline
+Taux de déduplication & 18\% & Réduction des communications en double \\
+\hline
+Complétude des profils & +45\% & Amélioration de la segmentation client \\
+\hline
+Précision des données & 92\% & Fiabilité accrue des analyses \\
+\hline
+Temps de réconciliation & -85\% & Gain de productivité pour les équipes \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection{Défis Rencontrés et Solutions}
+
+\begin{mdframed}[backgroundcolor=lightgreen!20, linewidth=1pt]
+Plusieurs défis techniques et organisationnels ont été surmontés durant l'implémentation du RCU :
+
+\begin{itemize}
+    \item \textbf{Normalisation des données} : Développement d'un framework de standardisation des formats d'adresse et de téléphone
+    \item \textbf{Gestion des homonymes} : Implémentation d'un système de scoring multi-critères pour différencier les homonymes
+    \item \textbf{Résistance au changement} : Programme de formation et d'accompagnement des équipes retail
+    \item \textbf{Performance du système} : Optimisation des requêtes et mise en place d'une architecture de cache
+\end{itemize}
+\end{mdframed}

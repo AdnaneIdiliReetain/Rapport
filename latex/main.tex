@@ -49,6 +49,7 @@
 \definecolor{coverblue}{RGB}{0, 51, 153} % Dark blue for titles (AMI blue)
 \definecolor{lightgray}{RGB}{240, 240, 240}
 \definecolor{lightblue}{RGB}{235, 245, 255}
+\definecolor{lightgreen}{RGB}{235, 255, 235} % Light green for highlighted sections
 \definecolor{warningorange}{RGB}{255, 240, 220}
 \definecolor{notegreen}{RGB}{240, 255, 240}
 
@@ -258,7 +259,9 @@
 AMI Paris est une marque de mode prestigieuse qui opère via un réseau de boutiques physiques utilisant le système de gestion Cegid Y2, ainsi que via une plateforme e-commerce basée sur Shopify. Cette structure multicanale, bien que favorable au développement commercial, a engendré des défis significatifs en termes de gestion des données clients.
 
 \section{Problématique}
+\begin{mdframed}[backgroundcolor=lightgreen!20, linewidth=1pt]
 L'absence d'un référentiel client unique pose plusieurs défis critiques pour AMI Paris, notamment la duplication des données clients entre les systèmes, des processus manuels chronophages pour réconcilier les informations, et une expérience client incohérente entre les canaux physiques et digitaux.
+\end{mdframed}
 
 \section{Objectifs}
 Le projet AMIgo Client Engagement vise à centraliser et synchroniser toutes les données clients provenant des divers canaux dans Salesforce, permettant une vision client unifiée à 360° essentielle pour améliorer l'expérience client et optimiser les opérations commerciales.
@@ -267,13 +270,24 @@ Le projet AMIgo Client Engagement vise à centraliser et synchroniser toutes les
 Les recherches récentes dans le domaine de la gestion de la relation client (CRM) et de l'intégration des données multicanales dans le secteur du luxe montrent une évolution vers des plateformes unifiées et des approches omnicanales. L'utilisation de l'intelligence artificielle et du machine learning pour la segmentation client et la personnalisation devient également une pratique courante.
 
 \section{Structure du Document}
-Ce rapport est organisé en sept chapitres. Après cette introduction, le chapitre 2 présente AMIgo Client Engagement 2.0, une évolution majeure du système. Les chapitres suivants abordent l'analyse métier, l'architecture technique, l'implémentation, les résultats et évaluation, et enfin la conclusion générale.
+Ce rapport est organisé selon la structure suivante :
+\begin{itemize}
+    \item \textbf{Chapitre 1: Contexte Organisationnel et Technique} - Présentation de Reetain Consulting, AMI Paris, et analyse de l'existant
+    \item \textbf{Chapitre 2: Fondation du Projet AMIgo} - Architecture technique globale et résultats des premiers sprints
+    \item \textbf{Chapitre 3: Référentiel Client Unifié (RCU)} - Conception du modèle de données client et processus GDPR
+    \item \textbf{Chapitre 4: Intégration et Chargement des Données} - Framework de chargement initial et intégration
+    \item \textbf{Chapitre 5: Expérience Client et Marketing} - Parcours client personnalisés et Marketing Cloud
+    \item \textbf{Chapitre 6: Résultats et Évaluation} - Métriques de performance et impact business
+\end{itemize}
 
-% Include other chapters
-% \input{latex/chapters/chapitre1.tex} % Commented out until we create this file
-\input{chapters/chapitre2.tex} % Fixed path
-% \input{chapters/chapitre3.tex}
-% \input{chapters/chapitre4.tex}
+% Include chapters
+\input{chapters/chapitre1.tex}
+\input{chapters/chapitre2.tex}
+% Uncomment these as they are created
+\input{chapters/chapitre3.tex}
+\input{chapters/chapitre4.tex}
+\input{chapters/chapitre5.tex}
+\input{chapters/chapitre6.tex}
 
 % Conclusion chapter
 \chapter{Conclusion Générale}

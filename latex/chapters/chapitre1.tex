@@ -1,33 +1,107 @@
-% Chapitre 1: Contexte et Problématique
+% Chapitre 1: Contexte Organisationnel et Technique
 
-\chapter{Contexte et Problématique}
+\chapter{Contexte Organisationnel et Technique}
 
-\section{Contexte du Projet}
-Dans cette section, nous présentons le contexte général du projet, l'environnement dans lequel il s'inscrit, et les motivations qui ont conduit à sa réalisation.
+\section{Présentation de Reetain Consulting}
+\begin{mdframed}[backgroundcolor=lightgreen!20, linewidth=1pt]
+Reetain Consulting est une société de conseil spécialisée dans l'implémentation de solutions CRM et l'optimisation de l'expérience client pour les marques de luxe et de mode. Avec une expertise particulière dans l'écosystème Salesforce, Reetain accompagne ses clients dans leur transformation digitale et l'unification de leurs données clients.
+\end{mdframed}
 
-\subsection{Présentation de l'Entreprise}
-[Description détaillée de l'entreprise d'accueil, son secteur d'activité, ses produits/services, etc.]
+\subsection{Expertise et Services}
+Reetain Consulting offre une gamme complète de services incluant :
 
-\subsection{Cadre du Projet}
-[Explication du cadre dans lequel s'inscrit ce projet au sein de l'entreprise]
+\begin{center}
+\begin{tabular}{|>{
+\bfseries}p{4cm}|p{9.5cm}|}
+\hline
+\rowcolor{lightblue} Domaine d'Expertise & Description \\
+\hline
+Intégration CRM & Implémentation et personnalisation de solutions Salesforce adaptées aux besoins spécifiques des marques de luxe \\
+\hline
+Stratégie Omnicanale & Conception et mise en œuvre de stratégies d'unification des canaux de vente et de communication \\
+\hline
+Gestion des Données & Consolidation, nettoyage et enrichissement des données clients provenant de sources multiples \\
+\hline
+Automatisation Marketing & Développement de parcours client automatisés et personnalisés \\
+\hline
+\end{tabular}
+\end{center}
 
-\section{Problématique}
-Cette section expose la problématique à laquelle répond ce projet de fin d'études.
+\section{Présentation d'AMI Paris}
+AMI Paris est une marque de mode française fondée en 2011 par Alexandre Mattiussi. Positionnée sur le segment du luxe accessible, AMI propose des collections pour homme et femme qui allient élégance parisienne et décontraction contemporaine.
 
-\subsection{Analyse de l'Existant}
-[Analyse de la situation actuelle et des limitations qui justifient le projet]
+\subsection{Écosystème Commercial}
+La marque opère à travers plusieurs canaux de distribution :
 
-\subsection{Enjeux et Défis}
-[Présentation des enjeux stratégiques et des défis techniques à relever]
+\begin{itemize}
+    \item \textbf{Réseau de boutiques physiques} : 12 boutiques en propre réparties dans les capitales mondiales de la mode
+    \item \textbf{E-commerce} : Plateforme Shopify représentant 35\% du chiffre d'affaires global
+    \item \textbf{Distribution wholesale} : Présence dans plus de 360 points de vente multimarques
+    \item \textbf{Marketplaces} : Partenariats avec des plateformes de luxe comme Farfetch et Net-a-Porter
+\end{itemize}
 
-\section{Objectifs du Projet}
-Cette section détaille les objectifs spécifiques du projet.
+\section{Analyse de l'Existant}
 
-\subsection{Objectifs Généraux}
-[Description des objectifs généraux du projet]
+\subsection{Systèmes d'Information Actuels}
+Avant le projet AMIgo, l'écosystème technique d'AMI Paris présentait une architecture fragmentée :
 
-\subsection{Objectifs Spécifiques}
-[Énumération et explication des objectifs spécifiques à atteindre]
+\begin{center}
+\begin{tabular}{|>{
+\bfseries}p{3.5cm}|p{5cm}|p{5cm}|}
+\hline
+\rowcolor{lightblue} Système & Fonction & Limitations \\
+\hline
+Cegid Y2 & Gestion des points de vente physiques et des clients retail & Données isolées, pas d'intégration native avec l'e-commerce \\
+\hline
+Shopify & Plateforme e-commerce et gestion des clients online & Base de données clients séparée de Cegid Y2 \\
+\hline
+Mailchimp & Campagnes email marketing & Synchronisation manuelle des listes, segmentation limitée \\
+\hline
+Tableur Excel & Réconciliation manuelle des données clients & Processus chronophage et sujet aux erreurs \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection{Défis de l'Intégration Multicanale}
+\begin{mdframed}[backgroundcolor=lightgreen!20, linewidth=1pt]
+L'absence d'une vision client unifiée engendre plusieurs problématiques critiques pour AMI Paris :
+\begin{itemize}
+    \item Impossibilité d'identifier un même client à travers les différents canaux
+    \item Duplication des profils clients et des communications
+    \item Expérience client incohérente entre les canaux physiques et digitaux
+    \item Difficulté à mesurer la valeur client globale et le ROI des actions marketing
+    \item Complexité dans la gestion des consentements RGPD à travers les différents systèmes
+\end{itemize}
+\end{mdframed}
+
+\section{Enjeux Stratégiques du Projet}
+Le projet AMIgo Client Engagement s'inscrit dans une stratégie plus large de transformation digitale et d'amélioration de l'expérience client chez AMI Paris.
+
+\subsection{Objectifs Business}
+\begin{itemize}
+    \item Augmenter le taux de conversion et le panier moyen grâce à une meilleure connaissance client
+    \item Améliorer la fidélisation client par des communications personnalisées et pertinentes
+    \item Optimiser l'allocation des ressources marketing grâce à une meilleure segmentation
+    \item Renforcer la cohérence de l'expérience de marque à travers tous les points de contact
+\end{itemize}
+
+\subsection{Indicateurs de Performance Clés}
+\begin{center}
+\begin{tabular}{|>{
+\bfseries}p{5cm}|p{3cm}|p{5cm}|}
+\hline
+\rowcolor{lightblue} KPI & Objectif & Méthode de Mesure \\
+\hline
+Taux de conversion omnicanal & +25\% & Suivi des parcours clients cross-canal \\
+\hline
+Valeur Vie Client (LTV) & +30\% & Analyse de cohortes pré/post implémentation \\
+\hline
+Taux d'engagement email & +40\% & Métriques d'ouverture et de clic \\
+\hline
+Efficacité opérationnelle & -50\% de temps & Réduction du temps consacré à la réconciliation des données \\
+\hline
+\end{tabular}
+\end{center}
 
 \section{Méthodologie Adoptée}
 Cette section présente l'approche méthodologique adoptée pour mener à bien ce projet.

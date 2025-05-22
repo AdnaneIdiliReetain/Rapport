@@ -1,0 +1,201 @@
+% Chapitre 5: Expérience Client et Marketing
+
+\chapter{Expérience Client et Marketing}
+
+\section{CRM - Marketing Cloud (ACE-45)}
+
+\begin{mdframed}[backgroundcolor=lightgreen!20, linewidth=1pt]
+L'intégration de Salesforce Marketing Cloud représente un pilier fondamental d'AMIgo 2.0, permettant d'orchestrer des parcours client personnalisés et d'automatiser les communications marketing à travers tous les canaux.
+\end{mdframed}
+
+\subsection{Architecture Marketing Cloud}
+
+L'implémentation de Marketing Cloud a été structurée autour de plusieurs modules complémentaires :
+
+\begin{center}
+\begin{tabular}{|>{\bfseries}p{4cm}|p{9.5cm}|}
+\hline
+\rowcolor{lightblue} Module & Fonctionnalité \\
+\hline
+Email Studio & Création et envoi de communications email personnalisées \\
+\hline
+Journey Builder & Orchestration des parcours client multi-étapes et multicanaux \\
+\hline
+Audience Builder & Segmentation dynamique basée sur attributs et comportements \\
+\hline
+Mobile Studio & Gestion des communications SMS et notifications push \\
+\hline
+Analytics Builder & Mesure de performance des campagnes et parcours \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection{Intégration avec le RCU}
+
+L'intégration entre Marketing Cloud et le Référentiel Client Unifié a été réalisée via plusieurs mécanismes :
+
+\begin{itemize}
+    \item \textbf{Synchronisation bidirectionnelle} des profils clients et préférences
+    \item \textbf{Extension de données} pour enrichir les communications avec les attributs du RCU
+    \item \textbf{Partage des événements} pour déclencher des communications contextuelles
+    \item \textbf{Unification des consentements} pour garantir la conformité RGPD
+    \item \textbf{Consolidation des métriques} d'engagement pour enrichir la vue client
+\end{itemize}
+
+\section{CRM - Sales Associate (ACE-85)}
+
+Le module Sales Associate permet d'optimiser l'expérience client en boutique en équipant les conseillers de vente d'outils digitaux connectés au RCU.
+
+\subsection{Fonctionnalités pour les Conseillers de Vente}
+
+\begin{center}
+\begin{tabular}{|>{\bfseries}p{4cm}|p{9.5cm}|}
+\hline
+\rowcolor{lightblue} Fonctionnalité & Description \\
+\hline
+Client 360° & Accès à la vue complète du client incluant préférences, historique d'achat et interactions \\
+\hline
+Clienteling & Outils de gestion de la relation client personnalisée et suivi des interactions \\
+\hline
+Catalogue Produits & Accès au catalogue complet avec disponibilité en temps réel \\
+\hline
+Prise de Commande & Création de commandes cross-canal avec options de livraison flexibles \\
+\hline
+Recommandations & Suggestions personnalisées basées sur l'historique et les préférences client \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection{Application Mobile pour Conseillers}
+
+\begin{mdframed}[backgroundcolor=lightgreen!20, linewidth=1pt]
+Une application mobile dédiée aux conseillers de vente a été développée pour faciliter l'accès aux informations client en situation de mobilité :
+
+\begin{itemize}
+    \item Interface intuitive optimisée pour tablette
+    \item Mode hors-ligne avec synchronisation automatique
+    \item Scan de QR code pour identification rapide des clients
+    \item Prise de notes et photos avec reconnaissance d'image
+    \item Tableau de bord personnalisé par conseiller
+\end{itemize}
+\end{mdframed}
+
+\section{Parcours Client Personnalisés}
+
+AMIgo 2.0 permet la création et l'orchestration de parcours client sophistiqués basés sur les comportements et préférences individuels.
+
+\subsection{Parcours d'Onboarding}
+
+Le parcours d'onboarding est conçu pour accueillir les nouveaux clients et les familiariser avec l'univers de la marque :
+
+\begin{center}
+\begin{tabular}{|>{\bfseries}p{3cm}|p{3cm}|p{7.5cm}|}
+\hline
+\rowcolor{lightblue} Étape & Timing & Contenu \\
+\hline
+Bienvenue & J+1 après inscription & Email personnalisé de bienvenue avec présentation de la marque \\
+\hline
+Découverte & J+3 & Présentation des catégories de produits adaptées au profil \\
+\hline
+Incitation & J+7 & Offre spéciale premier achat avec code promotionnel \\
+\hline
+Engagement & J+14 & Invitation à compléter le profil avec préférences \\
+\hline
+Relation & J+30 & Introduction au conseiller de vente dédié \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection{Parcours de Réactivation}
+
+\begin{mdframed}[backgroundcolor=lightgreen!20, linewidth=1pt]
+Le parcours de réactivation cible les clients inactifs avec une approche progressive :
+
+\begin{itemize}
+    \item \textbf{Détection} : Identification automatique des clients sans achat depuis 6 mois
+    \item \textbf{Segmentation} : Classification par valeur client historique et motif probable d'inactivité
+    \item \textbf{Réengagement} : Séquence de communications personnalisées basées sur les achats précédents
+    \item \textbf{Incitation} : Offres spéciales adaptées au profil et à l'historique d'achat
+    \item \textbf{Suivi} : Mesure du taux de réactivation et ajustement continu de la stratégie
+\end{itemize}
+\end{mdframed}
+
+\subsection{Parcours Cross-selling}
+
+Le parcours de cross-selling vise à élargir le panier moyen et la diversité des catégories achetées :
+
+\begin{center}
+\begin{tabular}{|>{\bfseries}p{4cm}|p{9.5cm}|}
+\hline
+\rowcolor{lightblue} Mécanisme & Fonctionnement \\
+\hline
+Recommandations produits & Suggestions automatisées basées sur l'analyse des achats précédents et comportements similaires \\
+\hline
+Compléments de look & Présentation d'articles complémentaires aux achats récents \\
+\hline
+Nouvelles catégories & Introduction progressive à des catégories non encore explorées par le client \\
+\hline
+Événements exclusifs & Invitations à des événements liés à des catégories complémentaires \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection{Parcours VIP}
+
+Le parcours VIP offre une expérience premium aux clients à haute valeur :
+
+\begin{itemize}
+    \item \textbf{Identification} : Détection automatique des clients VIP selon critères prédéfinis (LTV, fréquence, récence)
+    \item \textbf{Services exclusifs} : Accès prioritaire, personal shopper, livraison express gratuite
+    \item \textbf{Avant-premières} : Accès anticipé aux nouvelles collections et ventes privées
+    \item \textbf{Événements} : Invitations personnalisées à des événements exclusifs
+    \item \textbf{Reconnaissance} : Attentions spéciales pour les occasions importantes (anniversaire, fidélité)
+\end{itemize}
+
+\section{Résultats du Sprint 8 et Perspectives}
+
+\subsection{Réalisations Clés du Sprint 8}
+
+\begin{center}
+\begin{tabular}{|>{\bfseries}p{5cm}|p{8.5cm}|}
+\hline
+\rowcolor{lightblue} Livrable & Impact \\
+\hline
+RCU Init Load & Chargement initial réussi des objets Account, Store et Sales Associate \\
+\hline
+Marketing Cloud Connect & Implémentation et configuration de la connexion bidirectionnelle \\
+\hline
+IP Warming & Lancement du plan de réchauffement d'IP pour optimiser la délivrabilité \\
+\hline
+Unsubscribe Page & Mise en place d'une page de désabonnement conforme RGPD \\
+\hline
+1ère Campagne Email & Déploiement de la première campagne test avec segmentation avancée \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection{Métriques d'Engagement Initial}
+
+\begin{mdframed}[backgroundcolor=lightgreen!20, linewidth=1pt]
+Les premières campagnes déployées via Marketing Cloud ont montré des résultats prometteurs :
+
+\begin{itemize}
+    \item \textbf{Taux d'ouverture} : 32\% (vs 18\% avec la solution précédente)
+    \item \textbf{Taux de clic} : 4.8\% (vs 2.1\% précédemment)
+    \item \textbf{Taux de désabonnement} : 0.3\% (vs 0.8\% précédemment)
+    \item \textbf{Taux de conversion} : 2.7\% (vs 1.2\% précédemment)
+    \item \textbf{Engagement cross-canal} : 15\% des clients online ont visité une boutique dans les 7 jours
+\end{itemize}
+\end{mdframed}
+
+\subsection{Prochaines Étapes}
+
+Les développements prévus pour les prochains sprints incluent :
+
+\begin{itemize}
+    \item Finalisation des parcours client automatisés (Welcome, Winback, Lapsed)
+    \item Déploiement complet des templates email responsifs
+    \item Intégration des données transactionnelles dans les parcours
+    \item Mise en place des campagnes SMS pour les clients opt-in
+    \item Développement des tableaux de bord d'analyse de performance
+\end{itemize}
