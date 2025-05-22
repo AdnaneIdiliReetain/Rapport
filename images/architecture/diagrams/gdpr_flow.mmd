@@ -1,0 +1,11 @@
+
+graph TD
+    A[Client Consent] -->|Submit Form| B[Shopify Store]
+    B -->|API Call| C[Salesforce API]
+    C -->|Create/Update| D[Contact Record]
+    D -->|Set Preferences| E[Consent Object]
+    E -->|GDPR Automation| F{Valid Consent?}
+    F -->|Yes| G[Add to Marketing Lists]
+    F -->|No| H[Exclude from Marketing]
+    G -->|Journey Builder| I[Personalized Email]
+    H -->|Data Retention| J[Anonymize after 3 years]

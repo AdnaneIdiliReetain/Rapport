@@ -1,0 +1,31 @@
+
+@startuml Synchronisation Client
+actor "Client" as CLIENT
+participant "Cegid Y2" as CEGID
+participant "MuleSoft" as MULE
+participant "Salesforce API" as API
+database "Référentiel Client\nUnique" as RCU
+participant "Marketing Cloud" as SFMC
+
+CLIENT -> CEGID: Achat en magasin
+activate CEGID
+CEGID -> MULE: Batch export (daily)
+activate MULE
+MULE -> MULE: Transformation\net déduplication
+MULE -> API: Upsert Contact
+activate API
+API -> RCU: Création/Mise à jour client
+activate RCU
+RCU --> API: Confirmation
+deactivate RCU
+API --> MULE: Réponse API
+deactivate API
+MULE --> CEGID: Log de synchronisation
+deactivate MULE
+deactivate CEGID
+
+RCU -> SFMC: Enrichissement segment client
+activate SFMC
+SFMC -> CLIENT: Email personnalisé
+deactivate SFMC
+@enduml

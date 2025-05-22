@@ -1,0 +1,92 @@
+
+@startuml Modèle de Données Client Unifié
+!define MASTER #1798C1
+!define TRANSACTION #FFBC42
+!define MARKETING #95BF47
+!define CONSENT #DC143C
+
+skinparam class {
+    BackgroundColor white
+    ArrowColor grey
+    BorderColor black
+}
+
+package "Référentiel Client Unifié" {
+    class Contact {
+        + ContactId: String
+        + ExternalId: String
+        + SourceSystem: String
+        + FirstName: String
+        + LastName: String
+        + Email: String
+        + Phone: String
+        + PreferredLanguage: String
+        + CreatedDate: DateTime
+        + LastModifiedDate: DateTime
+    }
+    
+    class Address {
+        + AddressId: String
+        + ContactId: String
+        + Street: String
+        + City: String
+        + PostalCode: String
+        + Country: String
+        + Type: String
+        + IsDefault: Boolean
+    }
+    
+    class Consent {
+        + ConsentId: String
+        + ContactId: String
+        + ConsentType: String
+        + Status: Boolean
+        + CaptureDate: DateTime
+        + CaptureSource: String
+        + ExpiryDate: DateTime
+    }
+    
+    class Transaction {
+        + TransactionId: String
+        + ContactId: String
+        + OrderNumber: String
+        + OrderDate: DateTime
+        + Total: Decimal
+        + Currency: String
+        + Channel: String
+        + StoreId: String
+    }
+    
+    class Product {
+        + ProductId: String
+        + SKU: String
+        + Name: String
+        + Category: String
+        + Price: Decimal
+    }
+    
+    class OrderItem {
+        + OrderItemId: String
+        + TransactionId: String
+        + ProductId: String
+        + Quantity: Integer
+        + UnitPrice: Decimal
+        + Discount: Decimal
+    }
+    
+    class SegmentMembership {
+        + MembershipId: String
+        + ContactId: String
+        + SegmentId: String
+        + JoinDate: DateTime
+    }
+}
+
+Contact "1" -- "0..*" Address
+Contact "1" -- "0..*" Consent
+Contact "1" -- "0..*" Transaction
+Transaction "1" -- "1..*" OrderItem
+Product "1" -- "0..*" OrderItem
+Contact "1" -- "0..*" SegmentMembership
+
+@enduml

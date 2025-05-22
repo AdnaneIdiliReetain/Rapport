@@ -1,0 +1,61 @@
+@startuml
+title Architecture AMIgo Client Engagement
+
+skinparam componentStyle uml2
+skinparam backgroundColor white
+skinparam defaultTextAlignment center
+
+' Define colors using stereotypes
+skinparam component<<SALESFORCE>> {
+  BackgroundColor #1798C1
+  FontColor white
+  BorderColor #1798C1
+}
+skinparam component<<MARKETING>> {
+  BackgroundColor #FFBC42
+  FontColor black
+  BorderColor #FFBC42
+}
+skinparam component<<SHOPIFY>> {
+  BackgroundColor #95BF47
+  FontColor white
+  BorderColor #95BF47
+}
+skinparam component<<CEGID>> {
+  BackgroundColor #005CA5
+  FontColor white
+  BorderColor #005CA5
+}
+skinparam actor<<CLIENT>> {
+  BackgroundColor #9370DB
+  FontColor white
+  BorderColor #9370DB
+}
+
+package "Écosystème AMI Paris" {
+
+  component "Boutiques Physiques\n(Cegid Y2)" as CEGIDY2 <<CEGID>>
+  component "E-commerce\n(Shopify)" as SHOPIFY <<SHOPIFY>>
+
+  package "Salesforce Cloud" {
+    component "Salesforce Core\n(Service/Sales Cloud)" as SFCORE <<SALESFORCE>>
+    component "Salesforce Marketing Cloud" as SFMC <<MARKETING>>
+    component "Data Cloud" as SFDC <<SALESFORCE>>
+    database "Référentiel Client Unique" as RCU <<SALESFORCE>>
+  }
+
+  actor "Client AMI Paris" as CLIENT <<CLIENT>>
+
+  CEGIDY2 --> SFCORE : Synchronisation\nClients & Transactions
+  SHOPIFY --> SFCORE : Données Client\nConsents RGPD
+
+  SFCORE --> RCU : Alimentation
+  SFDC --> RCU : Enrichissement
+  RCU --> SFMC : Segments & Journey
+
+  SFMC --> CLIENT : Campagnes\npersonnalisées
+  CLIENT --> SHOPIFY : Interactions digitales
+  CLIENT --> CEGIDY2 : Achats en magasin
+}
+
+@enduml

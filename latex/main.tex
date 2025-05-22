@@ -1,0 +1,303 @@
+% PFE Report LaTeX Template - AMIgo Client Engagement
+% Based on Ayoub's template requirements
+
+\documentclass[12pt,a4paper]{report}
+
+% Required packages
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{natbib} % Load natbib before babel/french as warned
+\usepackage[french]{babel}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{colortbl} % Required for \rowcolor
+\usepackage{geometry}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{tocloft}
+\usepackage{enumitem}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{pifont}
+\usepackage{etoolbox}
+\usepackage{setspace}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage{listings}
+\usepackage{appendix}
+\usepackage{titletoc}
+\usepackage{fancybox}
+\usepackage{array}
+\usepackage{tikz}
+\usetikzlibrary{shadows} % Required for drop shadow
+\usepackage{mdframed}
+\usepackage[absolute]{textpos} % For absolute positioning
+
+% Page geometry
+\geometry{
+    a4paper,
+    top=2.5cm,
+    bottom=2.5cm,
+    left=2.5cm,
+    right=2.5cm,
+    headheight=14pt
+}
+
+% Define colors
+\definecolor{coverblue}{RGB}{0, 51, 153} % Dark blue for titles (AMI blue)
+\definecolor{lightgray}{RGB}{240, 240, 240}
+\definecolor{lightblue}{RGB}{235, 245, 255}
+\definecolor{warningorange}{RGB}{255, 240, 220}
+\definecolor{notegreen}{RGB}{240, 255, 240}
+
+% Configure hyperref
+\hypersetup{
+    colorlinks=true,
+    linkcolor=coverblue,
+    filecolor=magenta,
+    urlcolor=coverblue,
+    citecolor=coverblue,
+    pdftitle={AMIgo Client Engagement: Référentiel Client Unifié \& Automatisations Marketing},
+    pdfauthor={ÉTUDIANT PFE},
+    pdfsubject={Projet de Fin d'Études - AMI Paris},
+    pdfkeywords={PFE, CRM, Salesforce, AMI Paris, Omnicanal, Marketing Automation}
+}
+
+% Define a hollow circular bullet point
+\newcommand{\circularbullet}{\textcolor{coverblue}{$\circ$}}
+
+% Configure chapter and section formatting
+\titleformat{\chapter}[display]
+{\normalfont\huge\bfseries\color{coverblue}}
+{\chaptertitlename\ \thechapter}{20pt}{\Huge}
+\titlespacing*{\chapter}{0pt}{50pt}{40pt}
+
+\titleformat{\section}
+{\normalfont\Large\bfseries\color{coverblue}}
+{\thesection}{1em}{}
+\titlespacing*{\section}{0pt}{3.5ex plus 1ex minus .2ex}{2.3ex plus .2ex}
+
+\titleformat{\subsection}
+{\normalfont\large\bfseries}
+{\thesubsection}{1em}{}
+\titlespacing*{\subsection}{0pt}{3.25ex plus 1ex minus .2ex}{1.5ex plus .2ex}
+
+% Configure headers and footers
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\leftmark}
+\fancyhead[R]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0pt}
+
+% Configure TOC, LOF, LOT
+\renewcommand{\cfttoctitlefont}{\huge\bfseries\color{coverblue}}
+\renewcommand{\cftloftitlefont}{\huge\bfseries\color{coverblue}}
+\renewcommand{\cftlottitlefont}{\huge\bfseries\color{coverblue}}
+
+% Roman numerals for front matter
+\pagenumbering{roman}
+
+% Begin document
+\begin{document}
+
+% Cover page
+\begin{titlepage}
+\begin{center}
+    % University and company logos with absolute positioning
+    \vspace*{1cm}
+    % Set the unit to cm for textpos
+    \setlength{\TPHorizModule}{1cm}
+    \setlength{\TPVertModule}{1cm}
+    
+    % Position the logos with textpos
+    \begin{textblock}{5}(1.5,1)  % width of 5cm, positioned at (2,1)
+        \includegraphics[height=4cm]{../images/logos/logo_school.png}
+    \end{textblock}
+    
+    \begin{textblock}{5}(14.5,3.2)  % width of 5cm, positioned at (14,2.1) - adjusted to align bottom
+        \includegraphics[height=1.8cm]{../images/logos/logo_reetain.png}
+    \end{textblock}
+    
+    % Add vertical space for the rest of the content
+    \vspace{3.5cm}
+    
+    
+    % Title
+    {\fontsize{20}{24}\selectfont\textbf{\textcolor{coverblue}{MEMOIRE DE PROJET DE FIN D'ETUDES}}}\\[0.3cm]
+    
+    % Subtitle
+    {\large Pour l'Obtention du Diplôme :}\\[0.3cm]
+    
+    % Degree title
+    {\Large\textbf{\textcolor{coverblue}{INGÉNIEUR D'ÉTAT EN INFORMATIQUE ET INGÉNIERIE DES DONNÉES}}}\\[0.8cm]
+    
+    % Project title in bordered box with shadow effect using TikZ
+    \begin{center}
+        \begin{tikzpicture}
+            \node[draw=coverblue, thick, fill=white, inner sep=10pt, drop shadow] {
+                \begin{minipage}{0.8\textwidth}
+                    \begin{center}
+                        {\Large\textbf{AMIgo Client Engagement}}\\[0.3cm]
+                        {\normalsize Référentiel Client Unifié \& Automatisations Marketing}
+                    \end{center}
+                \end{minipage}
+            };
+        \end{tikzpicture}
+    \end{center}
+    \vspace{0.8cm}
+    
+    % Information columns with improved formatting - using tabular for alignment
+    \begin{center}
+        \begin{tabular}{p{0.45\textwidth}p{0.45\textwidth}}
+            \hspace*{0pt}\circularbullet~\textbf{\textcolor{coverblue}{Réalisé par :}} & \hspace*{0pt}\circularbullet~\textbf{\textcolor{coverblue}{Effectué à :}} \\
+            \hspace{4em}-\hspace*{0.5em} Adnane Idili & \hspace{4em}-\hspace*{0.5em} Reetain Consulting \\
+            \hspace{4em}-\hspace*{0.5em} El Mehdi Kamal & \\
+            & \\
+            \hspace*{0pt}\circularbullet~\textbf{\textcolor{coverblue}{Encadré à l'ENSA par :}} & \hspace*{0pt}\circularbullet~\textbf{\textcolor{coverblue}{Encadré à Reetain par :}} \\
+            \hspace{4em}-\hspace*{0.5em} Pr. ATLAS Abdelghafour & \hspace{4em}-\hspace*{0.5em} M. Abdelhay Aboulbaraket \\
+        \end{tabular}
+    \end{center}
+    \vspace{1cm}
+    
+    % Jury section - Ayoub style
+    \begin{center}
+        \textbf{\textcolor{coverblue}{Soutenu devant le jury :}}\\[0.5cm]
+        Pr. NOM Prénom, Professeur à l'ENSA\\[0.3cm]
+        Pr. NOM Prénom, Professeur à l'ENSA\\[0.3cm]
+        M. NOM Prénom, Reetain\\[0.3cm]
+    \end{center}
+    \vspace{0.8cm}
+    
+    % Academic year
+    {\normalsize Année Universitaire : 2024-2025}
+\end{center}
+\end{titlepage}
+
+% Dédicaces (Dedications)
+\chapter*{Dédicaces}
+\addcontentsline{toc}{chapter}{Dédicaces}
+\begin{center}
+    \vspace*{2cm}
+    \itshape
+    [Votre texte de dédicaces ici]
+    \vspace*{2cm}
+\end{center}
+\clearpage
+
+% Remerciements (Acknowledgements)
+\chapter*{Remerciements}
+\addcontentsline{toc}{chapter}{Remerciements}
+\begin{center}
+    \vspace*{1cm}
+    \large\textbf{REMERCIEMENTS}
+    \vspace*{1cm}
+\end{center}
+
+[Votre texte de remerciements ici]
+
+\clearpage
+
+% Table of contents
+\tableofcontents
+\clearpage
+
+% List of figures
+\listoffigures
+\clearpage
+
+% List of tables
+\listoftables
+\clearpage
+
+% Glossary and abbreviations
+\chapter*{Glossaire et Abréviations}
+\addcontentsline{toc}{chapter}{Glossaire et Abréviations}
+
+\section*{Abréviations}
+\begin{tabular}{ll}
+    \textbf{PFE} & Projet de Fin d'Études \\
+    \textbf{[ABRÉVIATION]} & [DÉFINITION] \\
+    \textbf{[ABRÉVIATION]} & [DÉFINITION] \\
+    % Ajoutez d'autres abréviations selon vos besoins
+\end{tabular}
+
+\section*{Glossaire}
+\begin{description}
+    \item[\textbf{[TERME]}] [DÉFINITION]
+    \item[\textbf{[TERME]}] [DÉFINITION]
+    % Ajoutez d'autres termes selon vos besoins
+\end{description}
+
+\clearpage
+
+% Executive summary in French
+\chapter*{Résumé Exécutif}
+\addcontentsline{toc}{chapter}{Résumé Exécutif}
+
+[Votre résumé exécutif en français ici]
+
+\clearpage
+
+% Executive summary in English
+\chapter*{Executive Summary}
+\addcontentsline{toc}{chapter}{Executive Summary}
+
+[Your executive summary in English here]
+
+\clearpage
+
+% Switch to Arabic numerals for main content
+\pagenumbering{arabic}
+
+% Introduction chapter
+\chapter{Introduction Générale}
+\section{Contexte du Projet}
+AMI Paris est une marque de mode prestigieuse qui opère via un réseau de boutiques physiques utilisant le système de gestion Cegid Y2, ainsi que via une plateforme e-commerce basée sur Shopify. Cette structure multicanale, bien que favorable au développement commercial, a engendré des défis significatifs en termes de gestion des données clients.
+
+\section{Problématique}
+L'absence d'un référentiel client unique pose plusieurs défis critiques pour AMI Paris, notamment la duplication des données clients entre les systèmes, des processus manuels chronophages pour réconcilier les informations, et une expérience client incohérente entre les canaux physiques et digitaux.
+
+\section{Objectifs}
+Le projet AMIgo Client Engagement vise à centraliser et synchroniser toutes les données clients provenant des divers canaux dans Salesforce, permettant une vision client unifiée à 360° essentielle pour améliorer l'expérience client et optimiser les opérations commerciales.
+
+\section{Revue de Littérature / État de l'Art}
+Les recherches récentes dans le domaine de la gestion de la relation client (CRM) et de l'intégration des données multicanales dans le secteur du luxe montrent une évolution vers des plateformes unifiées et des approches omnicanales. L'utilisation de l'intelligence artificielle et du machine learning pour la segmentation client et la personnalisation devient également une pratique courante.
+
+\section{Structure du Document}
+Ce rapport est organisé en sept chapitres. Après cette introduction, le chapitre 2 présente AMIgo Client Engagement 2.0, une évolution majeure du système. Les chapitres suivants abordent l'analyse métier, l'architecture technique, l'implémentation, les résultats et évaluation, et enfin la conclusion générale.
+
+% Include other chapters
+% \input{latex/chapters/chapitre1.tex} % Commented out until we create this file
+\input{chapters/chapitre2.tex} % Fixed path
+% \input{chapters/chapitre3.tex}
+% \input{chapters/chapitre4.tex}
+
+% Conclusion chapter
+\chapter{Conclusion Générale}
+\section{Synthèse des Travaux}
+[Synthèse des travaux ici]
+
+\section{Contributions}
+[Contributions ici]
+
+\section{Perspectives}
+[Perspectives ici]
+
+% Bibliography
+\bibliographystyle{plainnat}
+\bibliography{latex/references}
+\addcontentsline{toc}{chapter}{Bibliographie}
+
+% Appendices
+\begin{appendices}
+\chapter{Annexe A: [TITRE DE L'ANNEXE]}
+[Contenu de l'annexe A ici]
+
+\chapter{Annexe B: [TITRE DE L'ANNEXE]}
+[Contenu de l'annexe B ici]
+\end{appendices}
+
+\end{document}
