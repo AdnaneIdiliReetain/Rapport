@@ -1,7 +1,7 @@
 % PFE Report LaTeX Template - AMIgo Client Engagement
 % Based on Ayoub's template requirements
 
-\documentclass[12pt,a4paper]{report}
+\documentclass[12pt,a4paper,openany,oneside]{report}
 
 % Required packages
 \usepackage[utf8]{inputenc}
@@ -9,6 +9,42 @@
 \usepackage{natbib} % Load natbib before babel/french as warned
 \usepackage[french]{babel}
 \usepackage{graphicx}
+\usepackage{adjustbox}
+
+% Set up graphics path to use optimized images when available
+\graphicspath{{
+  {images_optimized/},
+  {images/}
+}}
+
+% Image optimization settings
+\pdfminorversion=5
+\pdfobjcompresslevel=2
+\pdfcompresslevel=9
+
+% Float placement settings to keep figures with their text
+\usepackage{float}
+\renewcommand{\topfraction}{0.9}
+\renewcommand{\bottomfraction}{0.9}
+\renewcommand{\textfraction}{0.1}
+\setcounter{topnumber}{2}
+\setcounter{bottomnumber}{2}
+\setcounter{totalnumber}{4}
+
+% Make mdframed environments breakable across pages
+\mdfdefinestyle{breakablegreen}{%
+  backgroundcolor=lightgreen!20,
+  linewidth=1pt,
+  innertopmargin=10pt,
+  innerbottommargin=10pt,
+  hidealllines=true,
+  leftmargin=10pt,
+  rightmargin=10pt,
+  frametitlerule=true,
+  frametitlebackgroundcolor=lightgreen!40,
+  frametitlerulewidth=1pt,
+  breakable=true
+}
 \usepackage{xcolor}
 \usepackage{colortbl} % Required for \rowcolor
 \usepackage{geometry}
@@ -24,6 +60,9 @@
 \usepackage{setspace}
 \usepackage{caption}
 \usepackage{subcaption}
+\captionsetup{font=large,labelfont=bf}
+\setlength{\abovecaptionskip}{10pt}
+\setlength{\belowcaptionskip}{10pt}
 \usepackage{float}
 \usepackage{listings}
 \usepackage{appendix}
@@ -42,13 +81,45 @@
     bottom=2.5cm,
     left=2.5cm,
     right=2.5cm,
-    headheight=14pt
+    headheight=14.62pt
 }
 
 % Define colors
 \definecolor{coverblue}{RGB}{0, 51, 153} % Dark blue for titles (AMI blue)
 \definecolor{lightgray}{RGB}{240, 240, 240}
 \definecolor{lightblue}{RGB}{235, 245, 255}
+
+% Define multiple figure commands for different contexts
+
+% 1. Inline figure - small figures that must stay with text
+\newcommand{\inlinefigure}[3]{
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth,height=0.3\textheight,keepaspectratio]{#1}
+    \caption{#2}
+    \label{#3}
+  \end{figure}
+}
+
+% 2. Standard figure - medium figures with some placement flexibility
+\newcommand{\standardfigure}[3]{
+  \begin{figure}[!htb]
+    \centering
+    \includegraphics[width=0.85\textwidth,height=0.5\textheight,keepaspectratio]{#1}
+    \caption{#2}
+    \label{#3}
+  \end{figure}
+}
+
+% 3. Large figure - detailed diagrams needing more space
+\newcommand{\largefigure}[3]{
+  \begin{figure}[p]
+    \centering
+    \includegraphics[width=0.95\textwidth,height=0.7\textheight,keepaspectratio]{#1}
+    \caption{#2}
+    \label{#3}
+  \end{figure}
+}
 \definecolor{lightgreen}{RGB}{235, 255, 235} % Light green for highlighted sections
 \definecolor{warningorange}{RGB}{255, 240, 220}
 \definecolor{notegreen}{RGB}{240, 255, 240}
@@ -78,20 +149,40 @@
 \titleformat{\section}
 {\normalfont\Large\bfseries\color{coverblue}}
 {\thesection}{1em}{}
-\titlespacing*{\section}{0pt}{3.5ex plus 1ex minus .2ex}{2.3ex plus .2ex}
+\titlespacing*{\section}{0pt}{4ex plus 1ex minus .2ex}{3ex plus .2ex}
 
 \titleformat{\subsection}
 {\normalfont\large\bfseries}
 {\thesubsection}{1em}{}
-\titlespacing*{\subsection}{0pt}{3.25ex plus 1ex minus .2ex}{1.5ex plus .2ex}
+\titlespacing*{\subsection}{0pt}{3.5ex plus 1ex minus .2ex}{2ex plus .2ex}
+
+% Additional spacing settings
+\setlength{\parskip}{1.2ex plus 0.5ex minus 0.2ex}
+\setlength{\itemsep}{0.8ex}
+\setlength{\parsep}{0.8ex}
 
 % Configure headers and footers
 \pagestyle{fancy}
 \fancyhf{}
 \fancyhead[L]{\leftmark}
-\fancyhead[R]{\thepage}
+\fancyfoot[R]{\thepage}
 \renewcommand{\headrulewidth}{0.4pt}
-\renewcommand{\footrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+% Set page style for chapter pages
+\fancypagestyle{plain}{
+  \fancyhf{}
+  \fancyfoot[R]{\thepage}
+  \renewcommand{\headrulewidth}{0pt}
+  \renewcommand{\footrulewidth}{0.4pt}
+}
+
+% Empty page style for blank pages
+\fancypagestyle{empty}{
+  \fancyhf{}
+  \renewcommand{\headrulewidth}{0pt}
+  \renewcommand{\footrulewidth}{0pt}
+}
 
 % Configure TOC, LOF, LOT
 \renewcommand{\cfttoctitlefont}{\huge\bfseries\color{coverblue}}
@@ -180,42 +271,128 @@
 % Dédicaces (Dedications)
 \chapter*{Dédicaces}
 \addcontentsline{toc}{chapter}{Dédicaces}
+\thispagestyle{plain}
 \begin{center}
-    \vspace*{2cm}
+    \vspace*{1cm}
+    \large
+    \begin{spacing}{1.2}
     \itshape
-    [Votre texte de dédicaces ici]
-    \vspace*{2cm}
+    Très chaleureusement, nous dédions ce travail\\[0.8em]
+    
+    À nos chers parents, pour leur amour, leur soutien inconditionnel et les sacrifices consentis pour notre éducation.\\[0.8em]
+    
+    À nos professeurs, pour leur accompagnement et le temps consacré à notre formation.\\[0.8em]
+    
+    À notre famille REETAIN, pour leur accueil chaleureux et leur confiance.\\[0.8em]
+    
+    Et à tous ceux qui ont contribué directement ou indirectement à la réalisation de ce projet.\\[0.8em]
+    \end{spacing}
+    \vspace*{1cm}
 \end{center}
-\clearpage
 
 % Remerciements (Acknowledgements)
 \chapter*{Remerciements}
 \addcontentsline{toc}{chapter}{Remerciements}
+\thispagestyle{plain}
 \begin{center}
-    \vspace*{1cm}
-    \large\textbf{REMERCIEMENTS}
-    \vspace*{1cm}
+    \vspace*{0.5cm}
 \end{center}
 
-[Votre texte de remerciements ici]
+\begin{spacing}{1.2}
+\large
 
-\clearpage
+Nous adressons nos sincères remerciements à tous ceux qui ont contribué au succès de notre stage.\\[0.5em]
+
+Notre gratitude va particulièrement à la société REETAIN, notamment à M.~KABBAJ~Rachid et M.~El~Fadil~Akram pour leur encadrement, leur disponibilité et le partage de leur expertise qui ont été déterminants pour la réussite de ce projet.\\[0.5em]
+
+Nous remercions également notre encadrant académique, M.~Atlas~Abdelghafour, pour son accompagnement et ses précieux conseils tout au long de ce travail.\\[0.5em]
+
+Enfin, nos remerciements s'adressent à l'équipe pédagogique de l'ENSA de Marrakech pour la qualité de la formation dispensée.
+
+\end{spacing}
+\vspace*{0.5cm}
+
+% Résumé Exécutif
+\chapter*{Résumé Exécutif}
+\addcontentsline{toc}{chapter}{Résumé Exécutif}
+\thispagestyle{plain}
+
+\begin{spacing}{1.15}
+\normalsize
+
+Ce rapport présente le projet AMIgo, une initiative d'engagement client menée pour REETAIN, distributeur exclusif d'AMI Paris au Maroc. Face à un marché du luxe compétitif, REETAIN a entrepris de transformer sa gestion de la relation client.
+
+Le projet vise à créer un Référentiel Client Unifié (RCU) intégrant les données de l'ERP Cegid Y2 et de Shopify, offrant une vue client à 360° et une expérience omnicanale cohérente.
+
+La méthodologie Agile a été adoptée avec des sprints de deux semaines. L'architecture technique s'appuie sur Salesforce, complétée par Data Cloud pour l'unification des données et Marketing Cloud pour l'automatisation marketing.
+
+Les réalisations principales incluent:
+\begin{itemize}\itemsep0em
+  \item Un framework ETL personnalisé pour le chargement initial des données
+  \item Une architecture d'intégration pour la synchronisation en temps réel
+  \item Un tableau de bord analytique avec KPIs commerciaux
+  \item Des solutions de déduplication et de gestion d'identités
+\end{itemize}
+
+Les bénéfices observés comprennent une augmentation de 15% du taux de conversion marketing, une réduction de 30% du temps de gestion des données client, et une amélioration significative du Net Promoter Score.
+
+\end{spacing}
+
+\vspace{0.5cm}
+\noindent\textbf{Mots clés:} CRM, Intégration de données, Salesforce, Retail de luxe, Data Cloud, Omnicanal
+
+% Executive Summary
+\chapter*{Executive Summary}
+\addcontentsline{toc}{chapter}{Executive Summary}
+\thispagestyle{plain}
+
+\begin{spacing}{1.15}
+\normalsize
+
+This report presents the AMIgo project, a customer engagement initiative for REETAIN, the exclusive distributor of AMI Paris in Morocco. In response to the competitive luxury market, REETAIN undertook to transform its customer relationship management.
+
+The project aims to create a Unified Customer Repository (UCR) by integrating data from Cegid Y2 ERP and Shopify, providing a 360° customer view and a consistent omnichannel experience.
+
+An Agile methodology was adopted with two-week sprints. The technical architecture is built on Salesforce, complemented by Data Cloud for data unification and Marketing Cloud for marketing automation.
+
+Key achievements include:
+\begin{itemize}\itemsep0em
+  \item A custom ETL framework for initial data loading
+  \item An integration architecture for real-time synchronization
+  \item An analytical dashboard with commercial KPIs
+  \item Solutions for deduplication and identity management
+\end{itemize}
+
+Observed benefits include a 15% increase in marketing conversion rates, a 30% reduction in customer data management time, and a significant improvement in Net Promoter Score.
+
+\end{spacing}
+
+\vspace{0.5cm}
+\noindent\textbf{Keywords:} CRM, Data Integration, Salesforce, Luxury Retail, Data Cloud, Omnichannel
 
 % Table of contents
+\cleardoublepage
+\thispagestyle{plain}
+\begin{center}
+\Large\bfseries\textcolor{blue}{Table des matières}
+\end{center}
+\vspace{1cm}
 \tableofcontents
-\clearpage
+\cleardoublepage
 
 % List of figures
 \listoffigures
-\clearpage
+\cleardoublepage
 
 % List of tables
 \listoftables
-\clearpage
+\cleardoublepage
 
 % Glossary and abbreviations
+\cleardoublepage
 \chapter*{Glossaire et Abréviations}
 \addcontentsline{toc}{chapter}{Glossaire et Abréviations}
+\thispagestyle{plain}
 
 \section*{Abréviations}
 \begin{tabular}{ll}
@@ -280,17 +457,31 @@ Ce rapport est organisé selon la structure suivante :
     \item \textbf{Chapitre 6: Résultats et Évaluation} - Métriques de performance et impact business
 \end{itemize}
 
-% Include chapters
+% Chapters
+\cleardoublepage
 \input{chapters/chapitre1.tex}
+
+\cleardoublepage
 \input{chapters/chapitre2.tex}
-% Uncomment these as they are created
+
+\cleardoublepage
 \input{chapters/chapitre3.tex}
+
+\cleardoublepage
 \input{chapters/chapitre4.tex}
+
+\cleardoublepage
 \input{chapters/chapitre5.tex}
+
+\cleardoublepage
 \input{chapters/chapitre6.tex}
 
-% Conclusion chapter
+% Conclusion will be added later
+\cleardoublepage
 \chapter{Conclusion Générale}
+\thispagestyle{plain}
+\addcontentsline{toc}{chapter}{Conclusion Générale}
+
 \section{Synthèse des Travaux}
 [Synthèse des travaux ici]
 

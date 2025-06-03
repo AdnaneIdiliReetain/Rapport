@@ -1,16 +1,19 @@
 % Chapitre 4: Intégration et Chargement des Données
 
 \chapter{Intégration et Chargement des Données}
+\thispagestyle{plain}
 
 \section{Initial Data Load Framework (ACE-5)}
 
-\begin{mdframed}[backgroundcolor=lightgreen!20, linewidth=1pt]
+\begin{mdframed}[style=breakablegreen]
 Le chargement initial des données historiques constitue une étape critique du projet AMIgo, nécessitant une approche méthodique pour garantir l'intégrité et la qualité des données migrées vers le Référentiel Client Unifié.
 \end{mdframed}
 
 \subsection{Stratégie de Migration}
 
 La stratégie de migration a été conçue selon une approche progressive par phases :
+
+\standardfigure{images/AMIgo - CRM Archi High Level (16).png}{Diagramme de flux de données entre Cegid Y2, Shopify et Salesforce}{fig:data_flow_diagram}
 
 \begin{center}
 \begin{tabular}{|>{\bfseries}p{3cm}|p{5cm}|p{5.5cm}|}
@@ -32,6 +35,8 @@ Phase 4 & Données de consentement & Consolidation selon la règle du consenteme
 
 Un framework ETL (Extract, Transform, Load) sur mesure a été développé pour orchestrer le processus de migration :
 
+\inlinefigure{images/AMIgo - CRM Archi High Level (13).png}{Flux du processus ETL pour le chargement des données}{fig:etl_process_flow}
+
 \begin{itemize}
     \item \textbf{Extraction} : Connecteurs spécifiques pour Cegid Y2 et Shopify avec pagination et gestion des timeouts
     \item \textbf{Transformation} : Pipeline de nettoyage, normalisation et enrichissement des données
@@ -43,7 +48,11 @@ Un framework ETL (Extract, Transform, Load) sur mesure a été développé pour 
 
 La préparation de l'intégration initiale a impliqué la mise en place des fondations techniques nécessaires à l'interopérabilité des systèmes.
 
+\largefigure{images/AMIgo - CRM Archi High Level (17).png}{Architecture d'intégration AMIgo - Vue de haut niveau}{fig:integration_architecture}
+
 \subsection{Architecture d'Intégration}
+
+\largefigure{images/AMIgo - CRM Archi High Level (14).png}{Architecture détaillée des composants d'intégration}{fig:component_architecture}
 
 \begin{center}
 \begin{tabular}{|>{\bfseries}p{4cm}|p{9.5cm}|}
@@ -65,7 +74,7 @@ Monitoring & Supervision en temps réel des flux d'intégration \\
 
 \subsection{Sécurisation des Échanges}
 
-\begin{mdframed}[backgroundcolor=lightgreen!20, linewidth=1pt]
+\begin{mdframed}[style=breakablegreen]
 La sécurité des données a été une priorité absolue dans la conception de l'architecture d'intégration :
 
 \begin{itemize}
@@ -84,7 +93,7 @@ Salesforce Data Cloud a été implémenté comme couche d'unification et d'enric
 \subsection{Fonctionnalités Implémentées}
 
 \begin{center}
-\begin{tabular}{|>{\bfseries}p{4cm}|p{9.5cm}|}
+\begin{tabular}{|>{\bfseries\raggedright\arraybackslash}p{4cm}|p{9.5cm}|}
 \hline
 \rowcolor{lightblue} Fonctionnalité & Description \\
 \hline
@@ -120,7 +129,7 @@ L'intégration des commandes et des lignes de commande permet une vision complè
 \subsection{Structure des Objets de Transaction}
 
 \begin{center}
-\begin{tabular}{|>{\bfseries}p{3.5cm}|p{4cm}|p{6cm}|}
+\begin{tabular}{|>{\bfseries\raggedright\arraybackslash}p{3.5cm}|p{4cm}|p{6cm}|}
 \hline
 \rowcolor{lightblue} Objet & Relation & Attributs Clés \\
 \hline
@@ -137,16 +146,18 @@ Payment & Enfant d'Order & Méthode, montant, statut, date \\
 
 \subsection{Synchronisation Bidirectionnelle}
 
-\begin{mdframed}[backgroundcolor=lightgreen!20, linewidth=1pt]
+\begin{mdframed}[style=breakablegreen]
 La synchronisation des commandes a été implémentée de manière bidirectionnelle :
 
 \begin{itemize}
-    \item \textbf{Cegid Y2 → Salesforce} : Synchronisation en temps réel des achats en boutique
-    \item \textbf{Shopify → Salesforce} : Intégration des commandes e-commerce via webhooks
-    \item \textbf{Salesforce → Cegid Y2} : Enrichissement des profils clients en boutique
-    \item \textbf{Salesforce → Shopify} : Mise à jour des préférences et consentements
+    \item \textbf{Cegid Y2 \rightarrow Salesforce} : Synchronisation en temps réel des achats en boutique
+    \item \textbf{Shopify \rightarrow Salesforce} : Intégration des commandes e-commerce via webhooks
+    \item \textbf{Salesforce \rightarrow Cegid Y2} : Enrichissement des profils clients en boutique
+    \item \textbf{Salesforce \rightarrow Shopify} : Mise à jour des préférences et consentements
 \end{itemize}
 \end{mdframed}
+
+\standardfigure{images/AMIgo - CRM Archi High Level (12).png}{Flux de synchronisation bidirectionnelle entre les systèmes}{fig:bidirectional_sync}
 
 \section{Défis Techniques et Résolution}
 
@@ -172,7 +183,7 @@ Produits & 45K & Synchronisation complète avec gestion des versions \\
 
 \subsection{Résolution des Problèmes d'Intégration}
 
-\begin{mdframed}[backgroundcolor=lightgreen!20, linewidth=1pt]
+\begin{mdframed}[style=breakablegreen]
 Plusieurs défis d'intégration ont été surmontés durant les sprints 6-7 :
 
 \begin{itemize}
