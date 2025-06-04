@@ -10,6 +10,11 @@
 \usepackage[french]{babel}
 \usepackage{graphicx}
 \usepackage{adjustbox}
+\usepackage{xcolor}
+\usepackage{colortbl} % Required for \rowcolor
+\usepackage{mdframed}
+\usepackage{tikz}
+\usetikzlibrary{shadows} % Required for drop shadow
 
 % Set up graphics path to use optimized images when available
 \graphicspath{{
@@ -31,6 +36,14 @@
 \setcounter{bottomnumber}{2}
 \setcounter{totalnumber}{4}
 
+% Define colors
+\definecolor{coverblue}{RGB}{0, 51, 153} % Dark blue for titles (AMI blue)
+\definecolor{lightgray}{RGB}{240, 240, 240}
+\definecolor{lightblue}{RGB}{235, 245, 255}
+\definecolor{lightgreen}{RGB}{235, 255, 235} % Light green for highlighted sections
+\definecolor{warningorange}{RGB}{255, 240, 220}
+\definecolor{notegreen}{RGB}{240, 255, 240}
+
 % Make mdframed environments breakable across pages
 \mdfdefinestyle{breakablegreen}{%
   backgroundcolor=lightgreen!20,
@@ -45,8 +58,7 @@
   frametitlerulewidth=1pt,
   breakable=true
 }
-\usepackage{xcolor}
-\usepackage{colortbl} % Required for \rowcolor
+
 \usepackage{geometry}
 \usepackage{titlesec}
 \usepackage{fancyhdr}
@@ -63,15 +75,11 @@
 \captionsetup{font=large,labelfont=bf}
 \setlength{\abovecaptionskip}{10pt}
 \setlength{\belowcaptionskip}{10pt}
-\usepackage{float}
 \usepackage{listings}
 \usepackage{appendix}
 \usepackage{titletoc}
 \usepackage{fancybox}
 \usepackage{array}
-\usepackage{tikz}
-\usetikzlibrary{shadows} % Required for drop shadow
-\usepackage{mdframed}
 \usepackage[absolute]{textpos} % For absolute positioning
 
 % Page geometry
@@ -83,11 +91,6 @@
     right=2.5cm,
     headheight=14.62pt
 }
-
-% Define colors
-\definecolor{coverblue}{RGB}{0, 51, 153} % Dark blue for titles (AMI blue)
-\definecolor{lightgray}{RGB}{240, 240, 240}
-\definecolor{lightblue}{RGB}{235, 245, 255}
 
 % Define multiple figure commands for different contexts
 
@@ -113,16 +116,13 @@
 
 % 3. Large figure - detailed diagrams needing more space
 \newcommand{\largefigure}[3]{
-  \begin{figure}[p]
+  \begin{figure}[!htbp]
     \centering
-    \includegraphics[width=0.95\textwidth,height=0.7\textheight,keepaspectratio]{#1}
+    \includegraphics[width=\textwidth,height=0.8\textheight,keepaspectratio]{#1}
     \caption{#2}
     \label{#3}
   \end{figure}
 }
-\definecolor{lightgreen}{RGB}{235, 255, 235} % Light green for highlighted sections
-\definecolor{warningorange}{RGB}{255, 240, 220}
-\definecolor{notegreen}{RGB}{240, 255, 240}
 
 % Configure hyperref
 \hypersetup{
