@@ -1,0 +1,52 @@
+\documentclass[preview]{standalone}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{fancybox}
+\usepackage{caption}
+
+% For borders around images
+\newcommand{\borderedimage}[3][0.9\textwidth]{%
+  \begin{figure}
+    \centering
+    \setlength{\fboxsep}{5pt}%
+    \setlength{\fboxrule}{1pt}%
+    \fbox{\includegraphics[width=#1]{#2}}
+    \caption{#3}
+  \end{figure}
+}
+
+% For simple centered images
+\newcommand{\simpleimage}[3][0.9\textwidth]{%
+  \begin{figure}
+    \centering
+    \includegraphics[width=#1]{#2}
+    \caption{#3}
+  \end{figure}
+}
+
+% For colored border images
+\newcommand{\colorimage}[4][0.9\textwidth]{%
+  \begin{figure}
+    \centering
+    \setlength{\fboxsep}{5pt}%
+    \setlength{\fboxrule}{1pt}%
+    \fcolorbox{#4}{white}{\includegraphics[width=#1]{#2}}
+    \caption{#3}
+  \end{figure}
+}
+
+\begin{document}
+
+\section*{Image Preview Tool}
+This document helps you test image placement with immediate visual feedback.
+
+\borderedimage{images/AMIgo - CRM Archi High Level (16).png}{Data flow diagram with simple border}
+
+\simpleimage{images/AMIgo - CRM Archi High Level (13).png}{ETL process flow without border}
+
+\colorimage{images/AMIgo - CRM Archi High Level (17).png}{Architecture with blue border}{blue}
+
+% Try different widths
+\borderedimage[0.7\textwidth]{images/AMIgo - CRM Archi High Level (14).png}{Architecture with 70\% width}
+
+\end{document} 

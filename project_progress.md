@@ -13,19 +13,34 @@
 - ✅ Structured content around actual ACE project epics and sprints
 - ✅ Added concise Dédicaces and Remerciements sections with professional formatting
 - ✅ Created concise Résumé Exécutif and Executive Summary with keywords
-- ✅ Fixed page numbering to appear at bottom right of pages
-- ✅ Improved document spacing and layout throughout
-- ✅ Eliminated blank pages between sections
-- ✅ Created fast preview script for quicker compilation
-- ✅ Fixed table of contents placement to appear on its own page
-- ✅ Fixed missing file references in main.tex
-- ✅ Fixed figure placement and caption issues in Chapter 4
-- ✅ Improved image readability with consistent sizing and better captions
-- ✅ Added image optimization system for faster compilation
-- ✅ Implemented context-aware figure system with three size options
-- ✅ Made highlighted boxes breakable across pages for better content flow
-- ✅ Enhanced Chapter 4 with detailed technical content from MCP data
-- ✅ Improved diagrams display with proper spacing and sizing
+- ✅ Fixed page numbering and section formatting issues
+- ✅ Added glossary and abbreviation sections with proper formatting
+- ✅ Enhanced image handling with precise size control and improved readability
+- ✅ Implemented image box system for consistent image placement using tcolorbox
+- ✅ Created hot reload compilation system for faster development
+
+### In Progress
+- 🔄 Chapter 4/5 (Intégration et Chargement des Données) - Optimizing image placement and content
+- 🔄 Chapter 6 (Résultats et Bénéfices) - Drafting content based on project outcomes
+- 🔄 Bibliography and references section - Collecting and formatting sources
+
+### To Do
+- ⬜ Review and edit all content for consistency and grammar
+- ⬜ Final formatting adjustments
+- ⬜ Generate final PDF with optimized images
+- ⬜ Create presentation slides for defense
+
+## Technical Notes
+- Image optimization script is working properly, creating compressed versions of all diagrams
+- LaTeX configuration parameter adjustments required for multiline tables
+- Fixed the mdframed package order in preamble to resolve styling issues
+- Implemented tcolorbox-based image management system for better control of image positioning and sizing
+
+## Recent Changes
+- (2025-06-03) Added hot reload compilation script with error reporting focused on image issues
+- (2025-06-03) Implemented flexible image box system with precise size control
+- (2025-06-03) Updated Chapter 4 with enhanced technical content from Confluence documents
+- (2025-06-03) Fixed image sizing and placement issues in Chapter 4
 
 ### Chapter Status
 - **Introduction Générale**: ✅ Basic content in place, structure defined
