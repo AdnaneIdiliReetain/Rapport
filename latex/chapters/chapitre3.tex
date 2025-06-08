@@ -200,6 +200,8 @@ OptOutSMS\_\_c & Booléen & Status de désinscription SMS marketing \\
 \end{tabular}
 \end{center}
 
+\newpage
+
 \subsection{Mécanisme de Déduplication}
 
 \begin{mdframed}[style=breakablegreen]
@@ -213,40 +215,16 @@ La déduplication des profils clients est un enjeu critique pour le RCU. Le syst
     \item Validation manuelle pour les scores entre 70\% et 85\%
     \item Journalisation complète des fusions dans l'objet \texttt{MergeAudit\_\_c}
 \end{itemize}
-
-L'extrait de code ci-dessous illustre la logique de détection des doublons:
 \end{mdframed}
 
-\begin{lstlisting}[language=Java, caption=Extrait de AccountTriggerHandler.cls]
-private List<Account> findPotentialDuplicates(Account newAccount) {
-    String email = newAccount.Email;
-    String phone = newAccount.Phone;
-    String normalizedPhone = normalizePhoneNumber(phone);
-    
-    List<Account> potentialDuplicates = new List<Account>();
-    
-    if (String.isNotBlank(email)) {
-        potentialDuplicates.addAll([
-            SELECT Id, FirstName, LastName, Email, Phone
-            FROM Account
-            WHERE Email = :email
-            AND Id != :newAccount.Id
-        ]);
-    }
-    
-    if (String.isNotBlank(normalizedPhone)) {
-        potentialDuplicates.addAll([
-            SELECT Id, FirstName, LastName, Email, Phone
-            FROM Account
-            WHERE Phone = :normalizedPhone
-            AND Id != :newAccount.Id
-            AND Email != :email
-        ]);
-    }
-    
-    return potentialDuplicates;
-}
-\end{lstlisting}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{chapters/images/account_trigger_handler.png}
+    \caption{Processus de gestion des doublons dans AccountTriggerHandler}
+    \label{fig:account-trigger}
+\end{figure}
+
+La figure~\ref{fig:account-trigger} détaille le flux de travail du déclencheur de compte, qui comprend la détection des doublons, le calcul du score de similarité, la fusion automatique ou la création d'une tâche de révision, et l'audit des actions.
 
 Une fois les doublons potentiels identifiés, le système applique une logique de fusion élaborée qui respecte les règles de priorité des sources tout en préservant l'intégrité des données. Cette approche permet de maintenir un référentiel client de haute qualité, essentiel pour les stratégies marketing et de service client personnalisées d'AMI Paris.
 
@@ -292,54 +270,16 @@ IsActive\_\_c & Booléen & Statut d'activité de la boutique \\
 
 \subsection{Synchronisation des Boutiques}
 
-La synchronisation des boutiques entre Cegid Y2 et Salesforce est gérée par la classe \texttt{CegidStoreInitQueueable}, qui implémente une logique de chargement et mise à jour par lots pour optimiser les performances et respecter les limites de gouvernance de la plateforme:
+La synchronisation des boutiques entre Cegid Y2 et Salesforce est gérée par la classe \texttt{CegidStoreInitQueueable}, qui implémente une logique de chargement et mise à jour par lots pour optimiser les performances et respecter les limites de gouvernance de la plateforme.
 
-\begin{lstlisting}[language=Java, caption=Extrait de CegidStoreInitQueueable.cls]
-public class CegidStoreInitQueueable implements Queueable, Database.AllowsCallouts {
-    private List<Map<String, Object>> stores;
-    private Integer batchSize = 50;
-    private Integer batchNumber;
-    
-    public CegidStoreInitQueueable(List<Map<String, Object>> stores, Integer batchNumber) {
-        this.stores = stores;
-        this.batchNumber = batchNumber;
-    }
-    
-    public void execute(QueueableContext context) {
-        Integer startIndex = batchNumber * batchSize;
-        Integer endIndex = Math.min(startIndex + batchSize, stores.size());
-        
-        if (startIndex >= stores.size()) {
-            return;
-        }
-        
-        List<Map<String, Object>> currentBatch = 
-            new List<Map<String, Object>>(stores.subList(startIndex, endIndex));
-        
-        List<Store__c> storesToUpsert = new List<Store__c>();
-        
-        for (Map<String, Object> storeData : currentBatch) {
-            Store__c store = createStoreFromData(storeData);
-            storesToUpsert.add(store);
-        }
-        
-        upsert storesToUpsert StoreExternalID__c;
-        
-        if (endIndex < stores.size()) {
-            CegidStoreInitQueueable nextBatch = 
-                new CegidStoreInitQueueable(stores, batchNumber + 1);
-            System.enqueueJob(nextBatch);
-        }
-    }
-    
-    private Store__c createStoreFromData(Map<String, Object> storeData) {
-        // Logic to map Cegid Y2 store data to Salesforce Store__c fields
-        // ...
-    }
-}
-\end{lstlisting}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\textwidth]{chapters/images/cegid_store_init_queueable.png}
+    \caption{Traitement asynchrone avec CegidStoreInitQueueable}
+    \label{fig:queueable}
+\end{figure}
 
-Cette approche asynchrone avec chaînage de jobs Queueable permet de traiter efficacement de grands volumes de données tout en maintenant la résilience du système face aux limitations de la plateforme Salesforce.
+La figure~\ref{fig:queueable} illustre le fonctionnement de la classe CegidStoreInitQueueable, qui permet de synchroniser les boutiques Cegid Y2 dans Salesforce par traitement asynchrone par lots. Ce mécanisme optimise les performances et garantit la résilience du système face aux limitations de la plateforme Salesforce.
 
 \section{CRM RCU - GDPR Process (ACE-13)}
 
@@ -368,7 +308,7 @@ La conformité au RGPD est assurée via un système dédié de gestion des conse
 Le modèle de consentement implémenté permet une gestion granulaire des préférences clients:
 
 \begin{center}
-\begin{tabular}{|>{\bfseries}p{3.5cm}|p{10cm}|}
+\begin{tabular}{|>{\bfseries}p{4cm}|p{10cm}|}
 \hline
 \rowcolor{lightblue} Type de Consentement & Description \\
 \hline
@@ -395,24 +335,10 @@ Ces préférences sont centralisées dans l'objet Account et synchronisées bidi
 Le processus d'anonymisation automatisé assure la conformité aux exigences de rétention de données du RGPD en identifiant et anonymisant les données clients inactifs après la période de conservation définie.
 \end{mdframed}
 
-% Remplacer le code par un placeholder pour diagram
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
-\fbox{
-\begin{minipage}{0.95\textwidth}
-\textbf{DIAGRAMME : Cycle de vie des données et Anonymisation RGPD}\\
-\vspace{0.5em}
-Ce diagramme illustrera le processus complet d'anonymisation :
-\begin{itemize}
-\item Identification des prospects inactifs basée sur seuils temporels (3 ans)
-\item Logique de détection multicritère (opt-in expirés ET absence d'activité)
-\item Workflow d'anonymisation en deux phases (marquage puis anonymisation)
-\item Champs anonymisés vs champs statistiques conservés
-\item Audit et traçabilité du processus d'anonymisation
-\end{itemize}
-\end{minipage}
-}
-\caption{Processus d'anonymisation RGPD}
+\includegraphics[width=0.45\textwidth]{chapters/images/gdpr_consent_flow.png}
+\caption{Cycle de vie des données et Anonymisation RGPD}
 \label{fig:gdpr-anonymization}
 \end{figure}
 
