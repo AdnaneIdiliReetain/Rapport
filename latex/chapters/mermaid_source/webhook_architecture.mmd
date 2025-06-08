@@ -1,0 +1,40 @@
+graph LR
+    %% External Systems and API Layer
+    Cegid([Cegid Y2]) --> |Webhook| CegidAPI[CegidWebhookAPI]
+    Shopify([Shopify]) --> |Webhook| ShopifyAPI[ShopifyWebhookAPI]
+    
+    %% Processing Pipeline - First Stage
+    subgraph Processing["Traitement des Données"]
+        direction TB
+        Parser[Payload Parser] --> EventExtractor[Metadata Extractor]
+        EventExtractor --> Router[Entity Router]
+        Router --> Processor[Entity Processor]
+    end
+    
+    %% Processing Pipeline - Second Stage
+    subgraph Mapping["Transformation des Données"]
+        direction TB
+        SFMapping[System FieldMapping] --> Transformer[Data Transformer]
+        Transformer --> Queue[Queueable Chain]
+    end
+    
+    %% Connect Stages
+    CegidAPI --> |JSON| Parser
+    ShopifyAPI --> |JSON| Parser
+    Processor --> |Load Rules| SFMapping
+    Queue --> SF[(Salesforce CRM)]
+    
+    %% Styles
+    classDef source fill:#f96,stroke:#333,stroke-width:2px,rx:20,ry:20
+    classDef api fill:#58a,stroke:#333,stroke-width:2px
+    classDef processor fill:#c9f,stroke:#333,stroke-width:2px
+    classDef mapper fill:#a7e,stroke:#333,stroke-width:2px
+    classDef storage fill:#7bf,stroke:#333,stroke-width:2px
+    classDef subgraph fill:#eee,stroke:#333,stroke-width:1px
+    
+    class Cegid,Shopify source
+    class CegidAPI,ShopifyAPI api
+    class Parser,EventExtractor,Router,Processor processor
+    class SFMapping,Transformer,Queue mapper
+    class SF storage
+    class Processing,Mapping subgraph 

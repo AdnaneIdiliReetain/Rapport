@@ -1,0 +1,28 @@
+flowchart TD
+    %% External Sources and Configuration
+    ExternalData[(Données\nExternes)] --> |JSON Payload| Parser[PayloadParser]
+    Config[(Configuration\nMétadonnées)] --> |Chargement| Mapping[SystemFieldMapping]
+    
+    %% Processing Pipeline
+    Parser --> |Parsed JSON| Mapping
+    Mapping --> |Appliquer règles| Transform[TransformationEngine]
+    
+    %% Field Processing
+    Transform --> |"Path Extraction\nDirect/Complex"| FieldProcessor[FieldProcessor]
+    FieldProcessor --> |Pour chaque champ| Validator["RulesValidator\n(Business Logic)"]
+    
+    %% Build and Save
+    Validator --> |Validé| Builder[SObjectBuilder]
+    Builder --> |DML Operations| SF[(Salesforce\nCRM)]
+    Validator -->|Erreurs| ErrorHandler[ErrorHandler]
+    
+    %% Styles
+    classDef data fill:#f96,stroke:#333,stroke-width:2px
+    classDef process fill:#c9f,stroke:#333,stroke-width:2px
+    classDef validation fill:#a7e,stroke:#333,stroke-width:2px
+    classDef output fill:#7bf,stroke:#333,stroke-width:2px
+    
+    class ExternalData,Config data
+    class Parser,Mapping,Transform,FieldProcessor process
+    class Validator,ErrorHandler validation
+    class Builder,SF output 

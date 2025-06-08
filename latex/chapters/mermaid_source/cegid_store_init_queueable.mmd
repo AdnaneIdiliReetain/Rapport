@@ -1,0 +1,40 @@
+flowchart TD
+    %% Entry Point
+    Start([API Integration]) --> |"Store Data"| InitQueueable["CegidStoreInitQueueable"]
+    
+    %% Main Processing Steps
+    InitQueueable --> ProcessBatch["Process Initial\nBatch (200)"]
+    ProcessBatch --> CreateStores["Create Store__c\nRecords"]
+    CreateStores --> |"Callout"| UpsertRelations["Upsert Store-SA\nRelationships"]
+    
+    %% Async Chain
+    UpsertRelations --> HasMore{"More\nRecords?"}
+    HasMore -->|"Yes"| EnqueueNext["Enqueue Next\nBatch"]
+    HasMore -->|"No"| Finish["Process\nComplete"]
+    
+    %% Next Batch Processing
+    EnqueueNext --> NextQueueable["Next CegidStore\nQueueable"]
+    NextQueueable --> |"Async"| ProcessBatch
+    
+    %% Error Handling
+    ProcessBatch --> |"Error"| HandleError["Log Error\nRetry Logic"]
+    HandleError --> ErrorRecovery{"Recoverable?"}
+    ErrorRecovery -->|"Yes"| EnqueueNext
+    ErrorRecovery -->|"No"| LogFailure["Log Fatal\nError"]
+    
+    %% Notification
+    Finish --> NotifyAdmin["Send Admin\nNotification"]
+    LogFailure --> NotifyAdmin
+    
+    %% Styles
+    classDef start fill:#f96,stroke:#333,stroke-width:2px
+    classDef process fill:#c9f,stroke:#333,stroke-width:2px
+    classDef decision fill:#a7e,stroke:#333,stroke-width:2px
+    classDef action fill:#79d,stroke:#333,stroke-width:2px
+    classDef end fill:#7bf,stroke:#333,stroke-width:2px
+    
+    class Start start
+    class InitQueueable,ProcessBatch,CreateStores,UpsertRelations,NextQueueable process
+    class HasMore,ErrorRecovery decision
+    class EnqueueNext,HandleError,LogFailure action
+    class Finish,NotifyAdmin end 

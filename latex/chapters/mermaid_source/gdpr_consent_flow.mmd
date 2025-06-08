@@ -1,0 +1,39 @@
+flowchart LR
+    %% Consent Entry Points
+    ShopifyOrder([Shopify Order]) -->|"Webhook"| ConsentCheck["Consent Check"]
+    CegidOrder([Cegid Y2 Order]) -->|"Batch\nProcess"| ConsentCheck
+    WebForm([Web Form]) -->|"Direct"| ConsentCheck
+    
+    %% Consent Processing
+    ConsentCheck -->|"Marketing\nOpt-in"| UpdateMarketing["Update Marketing\nPreferences"]
+    ConsentCheck -->|"GDPR\nOpt-out"| InitiateErasure["Initiate\nData Erasure"]
+    
+    %% Marketing Path
+    UpdateMarketing --> ConsentDate["Record Consent\nDate & Source"]
+    ConsentDate --> AddToMC["Add to Marketing\nCloud"]
+    
+    %% Erasure Path
+    InitiateErasure --> VerifyIdentity["Verify Customer\nIdentity"]
+    VerifyIdentity --> ApproveErasure{"Admin\nApproval?"}
+    ApproveErasure -->|"Yes"| ExecuteErasure["Execute\nErasure Process"]
+    ApproveErasure -->|"No"| NotifyDenial["Notify\nCustomer"]
+    
+    %% Erasure Execution
+    ExecuteErasure --> SFErasure["Salesforce\nData Removal"]
+    ExecuteErasure --> MCErasure["Marketing Cloud\nUnsubscribe"]
+    ExecuteErasure --> ShopifyErasure["Shopify\nAPI Call"]
+    
+    %% Final Steps
+    SFErasure & MCErasure & ShopifyErasure --> RecordAction["Record\nCompliance Action"]
+    RecordAction --> NotifyComplete["Notify\nCompletion"]
+    
+    %% Styles
+    classDef sources fill:#f96,stroke:#333,stroke-width:2px
+    classDef process fill:#c9f,stroke:#333,stroke-width:2px
+    classDef decision fill:#a7e,stroke:#333,stroke-width:2px
+    classDef action fill:#79d,stroke:#333,stroke-width:2px
+    
+    class ShopifyOrder,CegidOrder,WebForm sources
+    class ConsentCheck,VerifyIdentity,ExecuteErasure process
+    class ApproveErasure decision
+    class UpdateMarketing,InitiateErasure,ConsentDate,AddToMC,SFErasure,MCErasure,ShopifyErasure,RecordAction,NotifyComplete,NotifyDenial action 

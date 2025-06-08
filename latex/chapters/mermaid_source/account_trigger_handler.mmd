@@ -1,0 +1,43 @@
+flowchart TD
+    %% Trigger Entry Point
+    Start([Account Trigger]) --> TriggerContext{"Context?\nInsert/Update"}
+    
+    %% Branch by DML Operation
+    TriggerContext -->|"Before Insert"| CheckDups["Duplicate Check"]
+    TriggerContext -->|"After Update"| MdrProcessing["MDR Processing"]
+    
+    %% Duplicate Detection Process
+    CheckDups --> QueryPotential["Query Potential\nDuplicates"]
+    QueryPotential --> EmailMatch{"Email\nMatch?"}
+    
+    %% Match Handling
+    EmailMatch -->|"Yes"| CalculateSim["Calculate\nSimilarity Score"]
+    EmailMatch -->|"No"| PhoneMatch{"Phone\nMatch?"}
+    
+    PhoneMatch -->|"Yes"| CalculateSim
+    PhoneMatch -->|"No"| NoMatch["No Action\nNeeded"]
+    
+    %% Scoring and Actions
+    CalculateSim --> EvaluateScore{"Score > 85%?"}
+    EvaluateScore -->|"Yes"| AutoMerge["Auto-Merge\nAccounts"]
+    EvaluateScore -->|"No"| CreateTask["Create Review\nTask"]
+    
+    %% Audit and Logging
+    AutoMerge --> CreateLog["Create MergeAudit__c\nRecord"]
+    CreateLog --> UpdateMaster["Set MasterCustomerID"]
+    
+    %% MDR Processing Path
+    MdrProcessing --> MDRQualifying{"MDR\nQualifying?"}
+    MDRQualifying -->|"Yes"| EnrichAccount["Enrich Account\nDetails"]
+    MDRQualifying -->|"No"| NoMDRAction["No MDR\nAction"]
+    
+    %% Styles
+    classDef trigger fill:#f96,stroke:#333,stroke-width:2px
+    classDef process fill:#c9f,stroke:#333,stroke-width:2px
+    classDef decision fill:#a7e,stroke:#333,stroke-width:2px
+    classDef action fill:#79d,stroke:#333,stroke-width:2px
+    
+    class Start trigger
+    class TriggerContext,EmailMatch,PhoneMatch,EvaluateScore,MDRQualifying decision
+    class CheckDups,QueryPotential,CalculateSim,MdrProcessing process
+    class AutoMerge,CreateTask,CreateLog,UpdateMaster,EnrichAccount,NoMDRAction,NoMatch action 

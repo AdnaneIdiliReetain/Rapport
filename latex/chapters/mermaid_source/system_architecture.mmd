@@ -1,0 +1,65 @@
+flowchart LR
+    %% External Systems
+    subgraph ExternalSystems ["External Systems"]
+        Shopify[(Shopify)]
+        CegidY2[(Cegid Y2)]
+        WebForms[Web Forms]
+    end
+    
+    %% Integration Layer
+    subgraph IntegrationLayer ["Integration Layer"]
+        Webhooks[["Webhooks"]]
+        BatchAPI[["Batch API"]]
+        ConnectorAPI[["Connector API"]]
+    end
+    
+    %% Core Processing
+    subgraph CorePlatform ["Core Platform"]
+        DataProcessing{"Data\nProcessing"}
+        DuplicateHandling{"Duplicate\nHandling"}
+        UserInterface["User\nInterface"]
+        Reporting["Reporting\n& Analytics"]
+    end
+    
+    %% Storage
+    subgraph DataStorage ["Data Storage"]
+        SalesforceDB[(Salesforce DB)]
+        BigObjects[(Big Objects)]
+    end
+    
+    %% External Integrations
+    subgraph ExternalIntegrations ["External Systems"]
+        MarketingCloud[(Marketing\nCloud)]
+        PowerBI[(Power BI)]
+    end
+    
+    %% Connections
+    Shopify -->|"Orders\nCustomers"| Webhooks
+    CegidY2 -->|"POS Data\nInventory"| BatchAPI
+    WebForms -->|"Customer\nData"| ConnectorAPI
+    
+    Webhooks & BatchAPI & ConnectorAPI --> DataProcessing
+    
+    DataProcessing -->|"Process\nData"| DuplicateHandling
+    DuplicateHandling -->|"Deduplicated\nRecords"| SalesforceDB
+    DataProcessing -->|"Large\nData Sets"| BigObjects
+    
+    SalesforceDB <-->|"Display\nUpdate"| UserInterface
+    SalesforceDB -->|"Metrics"| Reporting
+    BigObjects -->|"Historical\nData"| Reporting
+    
+    SalesforceDB -->|"Customer\nSync"| MarketingCloud
+    Reporting -->|"Advanced\nAnalytics"| PowerBI
+    
+    %% Styles
+    classDef sources fill:#f96,stroke:#333,stroke-width:2px
+    classDef integration fill:#c9f,stroke:#333,stroke-width:2px
+    classDef processing fill:#a7e,stroke:#333,stroke-width:2px
+    classDef storage fill:#79d,stroke:#333,stroke-width:2px
+    classDef external fill:#bd7,stroke:#333,stroke-width:2px
+    
+    class Shopify,CegidY2,WebForms sources
+    class Webhooks,BatchAPI,ConnectorAPI integration
+    class DataProcessing,DuplicateHandling,UserInterface,Reporting processing
+    class SalesforceDB,BigObjects storage
+    class MarketingCloud,PowerBI external 

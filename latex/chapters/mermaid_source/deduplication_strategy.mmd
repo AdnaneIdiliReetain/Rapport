@@ -1,0 +1,46 @@
+flowchart TD
+    %% Entry Point
+    Start[Client entrant] --> IdCheck{"Vérification\nIdentifiants Externes"}
+    
+    %% Primary ID Checks
+    IdCheck -->|"ExternalCustomerID__c\nExiste"| MatchCegid[Match par ID\nCegid Y2]
+    IdCheck -->|"ShopifyCustomerID__c\nExiste"| MatchShopify[Match par ID\nShopify]
+    IdCheck -->|"Aucun ID\nExterne"| EmailCheck{"Vérification\nEmail"}
+    
+    %% Secondary Checks
+    EmailCheck -->|"Email\nTrouvé"| EmailMatch[Match par\nEmail]
+    EmailCheck -->|"Email\nNon Trouvé"| PhoneCheck{"Vérification\nTéléphone"}
+    PhoneCheck -->|"Téléphone\nTrouvé"| PhoneMatch[Match par\nTéléphone normalisé]
+    PhoneCheck -->|"Téléphone\nNon Trouvé"| NewAccount[Création\nNouveau Account]
+    
+    %% Account Processing
+    MatchCegid --> UpdateAccount[Mise à jour\nAccount existant]
+    MatchShopify --> UpdateAccount
+    
+    %% Duplicate Analysis
+    EmailMatch --> ScoreCalc[Calcul Score\nSimilarité]
+    PhoneMatch --> ScoreCalc
+    ScoreCalc --> ScoreEval{"Niveau\nSimilarité"}
+    
+    %% Score-based Actions
+    ScoreEval -->|">85%"| AutoMerge[Fusion\nAutomatique]
+    ScoreEval -->|"70%-85%"| ManualReview[Revue\nManuelle]
+    ScoreEval -->|"<70%"| NewAccount
+    
+    %% Final Steps
+    UpdateAccount --> MasterID[Génération\nMasterCustomerID]
+    AutoMerge --> MasterID
+    NewAccount --> MasterID
+    
+    %% Styles
+    classDef start fill:#f96,stroke:#333,stroke-width:2px
+    classDef process fill:#c9f,stroke:#333,stroke-width:2px
+    classDef decision fill:#a7e,stroke:#333,stroke-width:2px
+    classDef action fill:#79d,stroke:#333,stroke-width:2px
+    classDef output fill:#7bf,stroke:#333,stroke-width:2px
+    
+    class Start start
+    class IdCheck,EmailCheck,PhoneCheck,ScoreEval decision
+    class MatchCegid,MatchShopify,EmailMatch,PhoneMatch,ScoreCalc process
+    class UpdateAccount,AutoMerge,ManualReview,NewAccount action
+    class MasterID output 

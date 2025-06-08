@@ -1,0 +1,63 @@
+erDiagram
+    Account ||--o{ Contact : "has"
+    Account ||--o{ Order__c : "places"
+    Account ||--o{ ConsentRecord__c : "gives"
+    Account ||--o{ ExternalSourceLink__c : "referenced by"
+    Account {
+        string Name
+        string Email__c
+        string Phone
+        string MasterCustomerId__c
+        string Type
+        boolean IsPersonAccount
+        string Status__c
+    }
+    
+    Contact {
+        string FirstName
+        string LastName
+        string Email
+        string Phone
+        string ExternalId__c
+        date LastActivityDate
+    }
+    
+    ExternalSourceLink__c {
+        string ExternalId__c
+        string SourceSystem__c
+        datetime LastSyncDate__c
+        string Status__c
+    }
+    
+    ConsentRecord__c {
+        date ConsentDate__c
+        string ConsentType__c
+        string Channel__c
+        boolean HasOptedIn__c
+        string Source__c
+    }
+    
+    Order__c ||--|{ OrderItem__c : "contains"
+    Order__c {
+        string OrderNumber__c
+        datetime OrderDate__c
+        string Source__c
+        decimal Amount__c
+        string Status__c
+        string ExternalId__c
+    }
+    
+    OrderItem__c {
+        string ProductName__c
+        decimal Quantity__c
+        decimal UnitPrice__c
+        string SKU__c
+    }
+    
+    Store__c ||--o{ Account : "shops at"
+    Store__c {
+        string Name
+        string StoreId__c
+        string Type__c
+        string Region__c
+    } 

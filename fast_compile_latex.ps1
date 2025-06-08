@@ -5,7 +5,7 @@
 $latexDir = "latex"
 $outputDir = "output"
 $mainFile = "main"
-$fullCompile = $true # Set to $false for quick compilation (only one pdflatex run)
+$fullCompile = $false # Set to $false for quick compilation (only one pdflatex run)
 
 # Create timestamp for logging
 $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"

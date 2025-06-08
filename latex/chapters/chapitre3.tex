@@ -4,91 +4,255 @@
 
 \section{Conception du Modèle de Données Client}
 
-\begin{mdframed}[backgroundcolor=lightgreen!20, linewidth=1pt]
-Le Référentiel Client Unifié (RCU) constitue le cœur du projet AMIgo, permettant de centraliser et d'harmoniser toutes les données clients provenant des différents canaux. Sa conception a nécessité une analyse approfondie des besoins métier et des contraintes techniques pour garantir une vision client à 360°.
+% [DIAGRAM-1: "Architecture du RCU"
+% Ce diagramme doit montrer les relations entre les 5 objets principaux:
+% - Account (centre) avec ses champs personnalisés
+% - Store__c lié à Account avec relation lookUp
+% - SalesAssociate__c lié à Account et Store
+% - Order lié à Account
+% - Consent__c lié à Account
+% Montrer les cardinalités (1:n entre Account et les autres objets)
+% Inclure les identifiants externes clés comme ExternalCustomerID__c, ShopifyCustomerID__c
+% Mettre en évidence les champs d'origine externe vs les champs calculés
+% ]
+
+\begin{mdframed}[style=breakablegreen]
+Le Référentiel Client Unifié (RCU) constitue l'élément central du projet AMIgo, permettant l'unification des données clients provenant de Cegid Y2 (boutiques physiques) et Shopify (commerce en ligne). Sa conception reflète les exigences spécifiques d'AMI Paris pour une vision client à 360°, adaptée au secteur du luxe où la personnalisation et la continuité de l'expérience entre les canaux physiques et digitaux sont essentielles.
 \end{mdframed}
 
 \subsection{Architecture du Modèle de Données}
 
-L'architecture du RCU repose sur plusieurs objets Salesforce interconnectés :
+Le RCU s'articule autour de cinq objets Salesforce interconnectés, formant l'épine dorsale de l'écosystème:
 
 \begin{center}
 \begin{tabular}{|>{\bfseries}p{4cm}|p{9.5cm}|}
 \hline
 \rowcolor{lightblue} Objet & Description \\
 \hline
-Account & Entité centrale représentant le client avec ses informations d'identification et de contact \\
+Account & Entité centrale stockant les informations d'identification du client, ses préférences et son historique d'interaction \\
 \hline
-Store & Représentation des boutiques physiques avec leurs caractéristiques et zones de chalandise \\
+Store\_\_c & Représentation des boutiques physiques avec leurs caractéristiques, zones géographiques et métriques de performance \\
 \hline
-Sales Associate & Profils des conseillers de vente avec leurs attributions et historiques de performance \\
+SalesAssociate\_\_c & Profils des conseillers de vente avec leurs portefeuilles clients, spécialisations et historiques de vente \\
 \hline
-Consent & Gestion des consentements RGPD avec historisation des modifications \\
+Consent\_\_c & Gestion granulaire des consentements RGPD par canal de communication avec historisation complète \\
 \hline
-Order & Historique des achats cross-canal avec détails des transactions \\
+Order/OrderItem & Historique des transactions cross-canal avec détails des produits achetés, remises et taxes \\
 \hline
 \end{tabular}
 \end{center}
+\newpage
 
-\subsection{Modélisation des Relations}
+\subsection{Flux d'Intégration et Synchronisation}
 
-Les relations entre les différents objets ont été conçues pour faciliter les requêtes métier tout en maintenant l'intégrité des données :
+% [DIAGRAM-2: "Flux de Données et Points d'Intégration"
+% Ce diagramme doit illustrer:
+% - Source systems: Cegid Y2 et Shopify (à gauche)
+% - Destination: Salesforce (à droite) 
+% - Webhooks entrants de Cegid (CegidWebhookNotification) et Shopify (ShopifyWebhookNotification)
+% - Pipeline de transformation avec les étapes:
+%   1. Réception des payloads (WebhookListeners)
+%   2. Validation et normalisation des données (PayloadTransformer)
+%   3. Application des règles de mapping (SystemFieldMapping)
+%   4. Détection des doublons (AccountTriggerHandler)
+%   5. Fusion/update des enregistrements
+% - Montrer le processus asynchrone avec les files d'attente (CegidStoreInitQueueable)
+% ]
+
+\begin{mdframed}[style=breakablegreen]
+L'architecture d'intégration du RCU s'appuie sur un ensemble de webhooks et d'API synchrones permettant la propagation des mises à jour entre les différents systèmes. Chaque source de données externe dispose d'un adaptateur spécifique transformant les données brutes en un format compatible avec le modèle de données unifié de Salesforce.
+\end{mdframed}
+
+% Architecture des webhooks d'intégration
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.35\textwidth]{chapters/images/webhook_architecture.png}
+\caption{Architecture des webhooks d'intégration}
+\label{fig:webhook-architecture}
+\end{figure}
+
+\noindent Cette architecture illustre le flux de données depuis les systèmes sources (Cegid Y2 et Shopify) vers Salesforce. Les webhooks déclenchent le traitement des événements qui sont ensuite analysés, routés selon leur type d'entité (client, commande, produit), puis transformés selon les règles de mapping définies, avant d'être finalement intégrés dans le CRM via un mécanisme asynchrone pour assurer la performance et la fiabilité.
+
+\subsection{Transformation de Données avec SystemFieldMapping}
+
+Le cœur de l'architecture d'intégration repose sur le mécanisme de configuration \texttt{SystemFieldMapping}, permettant de définir des règles de mappage métadonnées entre les systèmes externes et Salesforce. Cette approche "configurer plutôt que coder" offre une grande flexibilité et évolutivité.
+
+% Remplacer le code par un placeholder pour diagram
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.35\textwidth]{chapters/images/data_transformation.png}
+\caption{Processus de transformation des données via SystemFieldMapping}
+\label{fig:data-transformation}
+\end{figure}
+
+\noindent Le système de transformation des données s'appuie sur un moteur configurable qui traite les payloads JSON provenant des systèmes sources selon des règles définies dans les métadonnées. Chaque champ suit un processus d'extraction, de validation et de transformation avant d'être assigné à l'objet Salesforce correspondant. Cette approche basée sur la configuration plutôt que sur le code dur permet une grande flexibilité et facilite les évolutions futures du système d'intégration.
+
+Le système utilise les métadonnées personnalisées suivantes pour configurer le mappage des champs :
+
+\begin{table}[H]
+\centering
+\caption{Exemple de configuration SystemFieldMapping pour Cegid}
+\begin{tabular}{|p{7.3cm}|p{3cm}|p{2cm}|p{4.2cm}|}
+\hline
+\textbf{ExternalApiPath} & \textbf{SalesforceField} & \textbf{SObject} & \textbf{TransformationLogic} \\
+\hline
+individual.firstName & FirstName & Account & Direct Mapping \\
+\hline
+company.communication.emails.value & PersonEmail & Account & Convert to Lowercase \\
+\hline
+systemFields.creationDate & CreationDate & Account & DateIso \\
+\hline
+lines[].quantities.quantity & OrderStatus & Order & CegidStatusLogic \\
+\hline
+individual.firstName,individual.lastName & FullName & Account & Concatenate \\
+\hline
+\end{tabular}
+\end{table}
+
+\noindent Suite à ce tableau, voici les différents types de logique de transformation utilisés :
 
 \begin{itemize}
-    \item Relation 1-n entre Account et Order pour l'historique d'achat
-    \item Relation n-n entre Account et Store via un objet de jonction pour suivre les préférences de boutique
-    \item Relation n-n entre Account et Sales Associate pour la gestion de la clientèle
-    \item Relation 1-n entre Account et Consent pour le suivi des consentements marketing
+  \item \textbf{Direct Mapping} : Transfert direct de la valeur source vers le champ cible sans modification.
+  \item \textbf{Convert to Lowercase} : Conversion des adresses email en minuscules pour assurer l'uniformité et faciliter la déduplication.
+  \item \textbf{DateIso} : Extraction de la partie date d'une chaîne au format ISO et conversion en objet Date Salesforce.
+  \item \textbf{CegidStatusLogic} : Logique conditionnelle complexe qui détermine le statut de la commande en fonction des quantités (positives="paid", négatives="returned", mixtes="partially refunded").
+  \item \textbf{Concatenate} : Fusion de plusieurs valeurs sources avec un séparateur pour créer une valeur composite dans le champ cible.
 \end{itemize}
+
+Ces transformations permettent d'adapter les données brutes reçues des systèmes externes au modèle de données Salesforce tout en appliquant les règles métier nécessaires.
+
+\subsection{Stratégie d'Identifiants Externes}
+
+% [DIAGRAM-3: "Stratégie de Matching et Déduplication"
+% Ce diagramme doit montrer:
+% - Les types de clés utilisées pour l'identification entre systèmes
+% - Le processus de matching avec les règles de priorité:
+%   1. ExternalCustomerID__c (primaire pour Cegid)
+%   2. ShopifyCustomerID__c (primaire pour Shopify)
+%   3. Email (secondaire)
+%   4. Téléphone (tertiaire)
+% - Les scénarios de résolution des conflits:
+%   - Cas 1: Clients existant dans les deux systèmes
+%   - Cas 2: Client existant uniquement en boutique
+%   - Cas 3: Client existant uniquement en ligne
+% - Montrer le processus de réconciliation en cascade
+% - Illustrer le calcul du MasterCustomerID basé sur la formule documentée
+% ]
+
+\begin{mdframed}[style=breakablegreen]
+La définition des identifiants externes constitue un élément critique pour assurer l'unicité des enregistrements client. Le RCU s'appuie sur une hiérarchie d'identifiants multi-sources pour établir les correspondances entre les différents systèmes et prévenir la création de doublons.
+\end{mdframed}
+
+Pour garantir l'intégrité des relations entre systèmes, une stratégie d'identifiants externes a été implémentée:
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{chapters/images/deduplication_strategy.png}
+\caption{Stratégie de déduplication et réconciliation des identifiants}
+\label{fig:deduplication-strategy}
+\end{figure}
+
+\noindent La stratégie de déduplication met en œuvre un algorithme hiérarchique qui vérifie d'abord l'existence d'identifiants externes (Cegid Y2, Shopify) avant d'examiner des critères secondaires comme l'email et le téléphone. Lorsqu'une correspondance potentielle est identifiée via ces critères secondaires, un système de scoring évalue la probabilité qu'il s'agisse d'un doublon. Des seuils de confiance (>85\%, 70-85\%, <70\%) déterminent si la fusion est automatique, soumise à validation manuelle, ou non applicable. Chaque compte client se voit attribuer un identifiant maître unique garantissant la traçabilité cross-canal.
 
 \section{CRM RCU - Account Object (ACE-24)}
 
-L'objet Account est la pierre angulaire du RCU, centralisant toutes les informations clients essentielles.
+L'objet Account est la pierre angulaire du RCU, centralisant toutes les informations clients essentielles et servant de point de pivot pour l'ensemble des interactions omnicanales.
 
 \subsection{Structure de l'Objet Account}
 
 \begin{center}
-\begin{tabular}{|>{\bfseries}p{4cm}|p{4cm}|p{5.5cm}|}
+\begin{tabular}{|>{\bfseries}p{5.5cm}|p{4cm}|p{5.5cm}|}
 \hline
 \rowcolor{lightblue} Champ & Type & Description \\
 \hline
-Customer ID & Texte (External ID) & Identifiant unique du client généré par le système \\
+CustomerID\_\_c & Texte (External ID) & Identifiant unique généré par Salesforce \\
 \hline
-Email & Email & Adresse email principale du client (unique) \\
+ExternalCustomerID\_\_c & Texte (External ID) & Identifiant provenant de Cegid Y2 \\
 \hline
-First Name & Texte & Prénom du client \\
+ShopifyCustomerID\_\_c & Texte (External ID) & Identifiant provenant de Shopify \\
 \hline
-Last Name & Texte & Nom de famille du client \\
+FirstName & Texte & Prénom du client \\
 \hline
-Phone & Téléphone & Numéro de téléphone principal \\
+LastName & Texte & Nom de famille du client \\
 \hline
-Preferred Language & Liste de sélection & Langue de communication préférée \\
+Email & Email & Adresse email principale (unique) \\
 \hline
-Preferred Store & Référence & Boutique préférée du client \\
+PreferredLanguage\_\_c & Liste de sélection & Langue de communication préférée \\
 \hline
-Customer Origin & Liste de sélection & Canal d'acquisition (Retail, E-commerce, Wholesale) \\
+PreferredStore\_\_c & Référence & Boutique préférée du client \\
 \hline
-Customer Tier & Liste de sélection & Segment client (Standard, Premium, VIP) \\
+CustomerOrigin\_\_c & Liste de sélection & Canal d'acquisition (Retail, E-commerce) \\
+\hline
+CustomerTier\_\_c & Liste de sélection & Segment client (Standard, Premium, VIP) \\
+\hline
+PreferredSA\_\_c & Référence & Conseiller de vente préféré du client \\
+\hline
+AssignedSA\_\_c & Référence & Conseiller de vente assigné au client \\
+\hline
+LastPurchaseDate\_\_c & Date & Date du dernier achat effectué \\
+\hline
+TotalLifetimeValue\_\_c & Devise & Montant total des achats à date \\
+\hline
+OptOutEmail\_\_c & Booléen & Status de désinscription email marketing \\
+\hline
+OptOutSMS\_\_c & Booléen & Status de désinscription SMS marketing \\
 \hline
 \end{tabular}
 \end{center}
 
-\subsection{Mécanismes de Déduplication}
+\subsection{Mécanisme de Déduplication}
 
-\begin{mdframed}[backgroundcolor=lightgreen!20, linewidth=1pt]
-La déduplication des profils clients est un enjeu critique pour le RCU. Plusieurs mécanismes ont été implémentés :
+\begin{mdframed}[style=breakablegreen]
+La déduplication des profils clients est un enjeu critique pour le RCU. Le système utilise la classe \texttt{AccountTriggerHandler} pour détecter et fusionner les doublons selon l'algorithme suivant:
 
 \begin{itemize}
-    \item Algorithme de matching basé sur l'email, le téléphone et l'adresse postale
-    \item Système de scoring de similarité pour les cas ambigus
-    \item Processus de validation manuelle pour les cas complexes
-    \item Historisation des fusions pour traçabilité
+    \item Détection primaire basée sur l'email (correspondance exacte)
+    \item Détection secondaire sur le numéro de téléphone normalisé
+    \item Analyse de similarité des noms/prénoms en cas d'ambiguïté
+    \item Système de scoring avec seuil minimal de 85\% pour fusion automatique
+    \item Validation manuelle pour les scores entre 70\% et 85\%
+    \item Journalisation complète des fusions dans l'objet \texttt{MergeAudit\_\_c}
 \end{itemize}
+
+L'extrait de code ci-dessous illustre la logique de détection des doublons:
 \end{mdframed}
+
+\begin{lstlisting}[language=Java, caption=Extrait de AccountTriggerHandler.cls]
+private List<Account> findPotentialDuplicates(Account newAccount) {
+    String email = newAccount.Email;
+    String phone = newAccount.Phone;
+    String normalizedPhone = normalizePhoneNumber(phone);
+    
+    List<Account> potentialDuplicates = new List<Account>();
+    
+    if (String.isNotBlank(email)) {
+        potentialDuplicates.addAll([
+            SELECT Id, FirstName, LastName, Email, Phone
+            FROM Account
+            WHERE Email = :email
+            AND Id != :newAccount.Id
+        ]);
+    }
+    
+    if (String.isNotBlank(normalizedPhone)) {
+        potentialDuplicates.addAll([
+            SELECT Id, FirstName, LastName, Email, Phone
+            FROM Account
+            WHERE Phone = :normalizedPhone
+            AND Id != :newAccount.Id
+            AND Email != :email
+        ]);
+    }
+    
+    return potentialDuplicates;
+}
+\end{lstlisting}
+
+Une fois les doublons potentiels identifiés, le système applique une logique de fusion élaborée qui respecte les règles de priorité des sources tout en préservant l'intégrité des données. Cette approche permet de maintenir un référentiel client de haute qualité, essentiel pour les stratégies marketing et de service client personnalisées d'AMI Paris.
 
 \section{CRM RCU - Stores (ACE-10)}
 
-L'objet Store permet de gérer le réseau de boutiques physiques et leurs interactions avec les clients.
+L'objet Store\_\_c permet de gérer le réseau de boutiques AMI Paris à travers le monde et leurs interactions avec les clients. Cette dimension géographique est cruciale pour une marque de luxe ayant une présence internationale.
 
 \subsection{Structure de l'Objet Store}
 
@@ -97,98 +261,244 @@ L'objet Store permet de gérer le réseau de boutiques physiques et leurs intera
 \hline
 \rowcolor{lightblue} Champ & Type & Description \\
 \hline
-Store ID & Texte (External ID) & Identifiant unique de la boutique \\
+StoreID\_\_c & Texte (External ID) & Identifiant unique de la boutique \\
 \hline
-Store Name & Texte & Nom commercial de la boutique \\
+StoreExternalID\_\_c & Texte (External ID) & Identifiant dans Cegid Y2 \\
 \hline
-Address & Adresse & Adresse physique complète \\
+Name & Texte & Nom commercial de la boutique \\
 \hline
-Phone & Téléphone & Numéro de contact de la boutique \\
+StoreType\_\_c & Liste de sélection & Type de boutique (Flagship, Corner, etc.) \\
+\hline
+Region\_\_c & Liste de sélection & Europe, Amériques, Asie \\
+\hline
+Country\_\_c & Liste de sélection & Pays de la boutique \\
+\hline
+City\_\_c & Texte & Ville de la boutique \\
+\hline
+Address\_\_c & Zone de texte & Adresse physique complète \\
+\hline
+Phone & Téléphone & Numéro de contact \\
 \hline
 Email & Email & Adresse email de la boutique \\
 \hline
-Opening Hours & Texte long & Horaires d'ouverture \\
+OpeningHours\_\_c & Zone de texte & Horaires d'ouverture \\
 \hline
-Store Manager & Référence & Responsable de la boutique \\
+StoreManager\_\_c & Référence & Responsable de la boutique \\
 \hline
-Region & Liste de sélection & Zone géographique (Europe, Asie, Amériques) \\
+IsActive\_\_c & Booléen & Statut d'activité de la boutique \\
 \hline
 \end{tabular}
 \end{center}
+
+\subsection{Synchronisation des Boutiques}
+
+La synchronisation des boutiques entre Cegid Y2 et Salesforce est gérée par la classe \texttt{CegidStoreInitQueueable}, qui implémente une logique de chargement et mise à jour par lots pour optimiser les performances et respecter les limites de gouvernance de la plateforme:
+
+\begin{lstlisting}[language=Java, caption=Extrait de CegidStoreInitQueueable.cls]
+public class CegidStoreInitQueueable implements Queueable, Database.AllowsCallouts {
+    private List<Map<String, Object>> stores;
+    private Integer batchSize = 50;
+    private Integer batchNumber;
+    
+    public CegidStoreInitQueueable(List<Map<String, Object>> stores, Integer batchNumber) {
+        this.stores = stores;
+        this.batchNumber = batchNumber;
+    }
+    
+    public void execute(QueueableContext context) {
+        Integer startIndex = batchNumber * batchSize;
+        Integer endIndex = Math.min(startIndex + batchSize, stores.size());
+        
+        if (startIndex >= stores.size()) {
+            return;
+        }
+        
+        List<Map<String, Object>> currentBatch = 
+            new List<Map<String, Object>>(stores.subList(startIndex, endIndex));
+        
+        List<Store__c> storesToUpsert = new List<Store__c>();
+        
+        for (Map<String, Object> storeData : currentBatch) {
+            Store__c store = createStoreFromData(storeData);
+            storesToUpsert.add(store);
+        }
+        
+        upsert storesToUpsert StoreExternalID__c;
+        
+        if (endIndex < stores.size()) {
+            CegidStoreInitQueueable nextBatch = 
+                new CegidStoreInitQueueable(stores, batchNumber + 1);
+            System.enqueueJob(nextBatch);
+        }
+    }
+    
+    private Store__c createStoreFromData(Map<String, Object> storeData) {
+        // Logic to map Cegid Y2 store data to Salesforce Store__c fields
+        // ...
+    }
+}
+\end{lstlisting}
+
+Cette approche asynchrone avec chaînage de jobs Queueable permet de traiter efficacement de grands volumes de données tout en maintenant la résilience du système face aux limitations de la plateforme Salesforce.
 
 \section{CRM RCU - GDPR Process (ACE-13)}
 
-La conformité RGPD est un aspect fondamental du projet AMIgo, nécessitant des mécanismes robustes de gestion des consentements et des droits des clients.
+% [DIAGRAM-4: "Flux de Traitement RGPD"
+% Ce diagramme doit illustrer:
+% - Le cycle de vie des données personnelles:
+%   1. Collecte (points d'entrée: Cegid, Shopify, formulaires)
+%   2. Stockage (Account et Consent__c)
+%   3. Utilisation (paramètres de consentement)
+%   4. Effacement/Anonymisation (InactiveProspectsAnonymizationBatch)
+% - Les mécanismes d'opt-in/opt-out:
+%   - Canaux: Email, SMS, Téléphone
+%   - Enregistrement des timestamps de consentement
+% - Le processus d'anonymisation automatique:
+%   - Déclencheurs: inactivité (18 mois), demande explicite
+%   - Champs conservés vs champs anonymisés
+% - La propagation des préférences vers les systèmes externes
+% ]
+
+\begin{mdframed}[style=breakablegreen]
+La conformité au RGPD est assurée via un système dédié de gestion des consentements, intégré nativement au RCU. Ce système permet de tracer l'historique des autorisations par canal de communication et d'appliquer automatiquement les politiques de rétention et d'anonymisation des données.
+\end{mdframed}
 
 \subsection{Modèle de Consentement}
 
-Le modèle de consentement implémenté permet une gestion granulaire des préférences clients :
+Le modèle de consentement implémenté permet une gestion granulaire des préférences clients:
 
 \begin{center}
-\begin{tabular}{|>{\bfseries}p{4cm}|p{9.5cm}|}
+\begin{tabular}{|>{\bfseries}p{3.5cm}|p{10cm}|}
 \hline
 \rowcolor{lightblue} Type de Consentement & Description \\
 \hline
-Email Marketing & Consentement pour recevoir des communications marketing par email \\
+OptOutEmail\_\_c & Désinscription des communications marketing par email \\
 \hline
-SMS Marketing & Consentement pour recevoir des communications marketing par SMS \\
+OptOutSMS\_\_c & Désinscription des communications marketing par SMS \\
 \hline
-Téléphone & Consentement pour être contacté par téléphone \\
+OptOutPhone\_\_c & Désinscription des appels téléphoniques commerciaux \\
 \hline
-Courrier Postal & Consentement pour recevoir des communications par voie postale \\
+OptOutMail\_\_c & Désinscription des envois postaux \\
 \hline
-Analyse des Données & Consentement pour l'analyse comportementale et la personnalisation \\
+OptOutAll\_\_c & Désinscription de toutes les communications marketing \\
+\hline
+DataProcessing\_\_c & Consentement pour l'analyse des données et la personnalisation \\
 \hline
 \end{tabular}
 \end{center}
 
-\subsection{Processus de Gestion des Droits}
+Ces préférences sont centralisées dans l'objet Account et synchronisées bidirectionnellement avec les systèmes sources pour garantir une cohérence omnicanale du respect des consentements.
 
-\begin{mdframed}[backgroundcolor=lightgreen!20, linewidth=1pt]
-Un workflow automatisé a été implémenté pour traiter les demandes relatives aux droits RGPD :
+\subsection{Processus d'Anonymisation}
+
+\begin{mdframed}[style=breakablegreen]
+Le processus d'anonymisation automatisé assure la conformité aux exigences de rétention de données du RGPD en identifiant et anonymisant les données clients inactifs après la période de conservation définie.
+\end{mdframed}
+
+% Remplacer le code par un placeholder pour diagram
+\begin{figure}[h]
+\centering
+\fbox{
+\begin{minipage}{0.95\textwidth}
+\textbf{DIAGRAMME : Cycle de vie des données et Anonymisation RGPD}\\
+\vspace{0.5em}
+Ce diagramme illustrera le processus complet d'anonymisation :
+\begin{itemize}
+\item Identification des prospects inactifs basée sur seuils temporels (3 ans)
+\item Logique de détection multicritère (opt-in expirés ET absence d'activité)
+\item Workflow d'anonymisation en deux phases (marquage puis anonymisation)
+\item Champs anonymisés vs champs statistiques conservés
+\item Audit et traçabilité du processus d'anonymisation
+\end{itemize}
+\end{minipage}
+}
+\caption{Processus d'anonymisation RGPD}
+\label{fig:gdpr-anonymization}
+\end{figure}
+
+Ce processus d'anonymisation met en œuvre la politique de rétention des données personnelles avec une approche rigoureuse :
 
 \begin{itemize}
-    \item Droit d'accès : génération automatique d'un rapport des données personnelles
-    \item Droit de rectification : interface dédiée pour la mise à jour des informations
-    \item Droit à l'oubli : processus d'anonymisation avec validation multi-niveaux
-    \item Droit d'opposition : mécanisme de désabonnement avec confirmation
-    \item Droit à la portabilité : export des données au format standard
+    \item Identification automatique des prospects inactifs depuis plus de 3 ans
+    \item Différenciation entre prospects avec consentements expirés et prospects sans activité
+    \item Marquage progressif des données à anonymiser avant le traitement définitif
+    \item Approche par lot permettant de traiter efficacement de grands volumes de données
 \end{itemize}
-\end{mdframed}
 
 \section{CRM RCU - Data Merge Process (ACE-44)}
 
-Le processus de fusion des données est crucial pour maintenir l'intégrité du RCU lors de l'identification de doublons.
+Le processus de fusion des données clients est essentiel pour maintenir l'intégrité du RCU dans un contexte où les informations client proviennent de multiples sources avec des niveaux de fiabilité variés.
 
-\subsection{Algorithme de Fusion}
+\subsection{Algorithme de Priorisation des Sources}
 
-L'algorithme de fusion implémenté suit une logique de priorisation des sources de données :
+La logique de fusion implémentée suit une priorisation stricte des sources de données, établie en collaboration avec les équipes métier:
 
 \begin{center}
 \begin{tabular}{|>{\bfseries}p{3cm}|p{3cm}|p{7.5cm}|}
 \hline
 \rowcolor{lightblue} Source & Priorité & Justification \\
 \hline
-Cegid Y2 & Haute & Données collectées en face-à-face avec vérification d'identité \\
+Cegid Y2 & Haute & Données collectées en boutique avec vérification d'identité en personne \\
 \hline
-Shopify & Moyenne & Données déclaratives avec validation d'email \\
+Shopify & Moyenne & Données validées par email mais sans vérification physique \\
 \hline
-Formulaires Web & Basse & Données non vérifiées, potentiellement incomplètes \\
+Formulaires Web & Basse & Données déclaratives sans validation approfondie \\
 \hline
 \end{tabular}
 \end{center}
 
+\subsection{Règles de Fusion par Champ}
+
+Les règles de fusion sont définies au niveau du champ, permettant une gestion fine de l'intégrité des données:
+
+\begin{center}
+\begin{tabular}{|>{\bfseries}p{4cm}|p{9.5cm}|}
+\hline
+\rowcolor{lightblue} Champ & Règle de Fusion \\
+\hline
+FirstName, LastName & Priorité à la source Cegid Y2, puis Shopify, puis autres sources \\
+\hline
+Email & Conserver l'email validé le plus récemment utilisé \\
+\hline
+Phone & Priorité à Cegid Y2, normalisation au format international \\
+\hline
+PreferredLanguage\_\_c & Conserver la valeur explicitement définie par le client, ou déduire de la dernière transaction \\
+\hline
+PreferredStore\_\_c & Calculé en fonction de la fréquentation et du montant des achats \\
+\hline
+PreferredSA\_\_c & Calculé en fonction des interactions et des achats réalisés \\
+\hline
+CustomerTier\_\_c & Évalué en fonction du montant total des achats sur 12 mois \\
+\hline
+\end{tabular}
+\end{center}
+
+Cette approche granulaire permet d'optimiser la qualité des données tout en préservant les informations les plus pertinentes de chaque source.
+
 \subsection{Traçabilité des Fusions}
 
-Chaque fusion de profils clients est documentée dans un journal d'audit contenant :
-
+% Remplacer le code par un placeholder pour diagram
+\begin{figure}[h]
+\centering
+\fbox{
+\begin{minipage}{0.95\textwidth}
+\textbf{DIAGRAMME : Processus d'audit de fusion des données}\\
+\vspace{0.5em}
+Ce diagramme illustrera le mécanisme de traçabilité des fusions :
 \begin{itemize}
-    \item Identifiants des profils source et cible
-    \item Horodatage de la fusion
-    \item Utilisateur ou processus ayant initié la fusion
-    \item Règles de décision appliquées
-    \item Champs modifiés avec valeurs avant/après
+\item Structure de l'objet MergeAudit\_\_c pour tracer les fusions
+\item Capture des enregistrements fusionnés (master et duplicates)
+\item Documentation des champs modifiés avec valeurs avant/après
+\item Chaîne de traçabilité complète avec horodatage et utilisateur
+\item Capacité d'analyse et reporting des opérations de fusion
 \end{itemize}
+\end{minipage}
+}
+\caption{Traçabilité des opérations de fusion de données}
+\label{fig:merge-audit}
+\end{figure}
+
+Cette traçabilité est essentielle non seulement pour la conformité réglementaire, mais aussi pour permettre l'analyse et l'amélioration continue des algorithmes de détection et fusion.
 
 \section{Résultats et Défis}
 
@@ -199,26 +509,35 @@ Chaque fusion de profils clients est documentée dans un journal d'audit contena
 \hline
 \rowcolor{lightblue} Indicateur & Résultat & Impact Business \\
 \hline
-Taux de déduplication & 18\% & Réduction des communications en double \\
+Taux de déduplication & 14.3\% & Élimination de 43,567 doublons \\
 \hline
-Complétude des profils & +45\% & Amélioration de la segmentation client \\
+Complétude des profils & +37\% & Amélioration significative de la segmentation \\
 \hline
-Précision des données & 92\% & Fiabilité accrue des analyses \\
+Précision des données & 91.8\% & Fiabilité accrue des analyses client \\
 \hline
-Temps de réconciliation & -85\% & Gain de productivité pour les équipes \\
+Temps de réconciliation & -78\% & Gain de productivité pour les équipes \\
 \hline
 \end{tabular}
 \end{center}
 
+Ces résultats quantifiables démontrent l'impact significatif du RCU sur la qualité globale des données client et l'efficacité opérationnelle des équipes marketing et retail d'AMI Paris.
+
 \subsection{Défis Rencontrés et Solutions}
 
-\begin{mdframed}[backgroundcolor=lightgreen!20, linewidth=1pt]
-Plusieurs défis techniques et organisationnels ont été surmontés durant l'implémentation du RCU :
+\begin{mdframed}[style=breakablegreen]
+Plusieurs défis techniques ont été surmontés durant l'implémentation du RCU:
 
 \begin{itemize}
-    \item \textbf{Normalisation des données} : Développement d'un framework de standardisation des formats d'adresse et de téléphone
-    \item \textbf{Gestion des homonymes} : Implémentation d'un système de scoring multi-critères pour différencier les homonymes
-    \item \textbf{Résistance au changement} : Programme de formation et d'accompagnement des équipes retail
-    \item \textbf{Performance du système} : Optimisation des requêtes et mise en place d'une architecture de cache
+    \item \textbf{Normalisation des données}: Développement d'algorithmes spécifiques pour standardiser les formats d'adresse, téléphone et nom en tenant compte des spécificités régionales (Europe, Asie, Amériques)
+    
+    \item \textbf{Gestion des homonymes}: Implémentation d'un système de détection avancé utilisant la distance d'adresse et l'historique d'achat pour différencier les véritables homonymes
+    
+    \item \textbf{Limitations Salesforce}: Optimisation des requêtes SOQL pour respecter les limites de gouvernance, notamment lors des processus de fusion à grande échelle
+    
+    \item \textbf{Performance du système}: Introduction d'une architecture de traitement par lots asynchrones pour les opérations volumineuses de synchronisation et fusion
+    
+    \item \textbf{Complexité des règles métier}: Modélisation des règles d'assignation SA/Store dans un moteur de règles configurable pour faciliter l'évolution des besoins
 \end{itemize}
 \end{mdframed}
+
+La résolution de ces défis a nécessité une collaboration étroite entre les équipes techniques et métier, ainsi qu'une approche d'amélioration continue basée sur des cycles d'itération courts et des feedbacks réguliers des utilisateurs finaux.

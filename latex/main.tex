@@ -11,10 +11,14 @@
 \usepackage{graphicx}
 \usepackage{adjustbox}
 
+% Required for exact figure placement
+\usepackage{float}
+
 % Set up graphics path to use optimized images when available
 \graphicspath{{
   {images_optimized/},
-  {images/}
+  {images/},
+  {chapters/images/}
 }}
 
 % Image optimization settings
@@ -33,17 +37,22 @@
 
 % Make mdframed environments breakable across pages
 \mdfdefinestyle{breakablegreen}{%
-  backgroundcolor=lightgreen!20,
-  linewidth=1pt,
-  innertopmargin=10pt,
-  innerbottommargin=10pt,
-  hidealllines=true,
-  leftmargin=10pt,
-  rightmargin=10pt,
-  frametitlerule=true,
-  frametitlebackgroundcolor=lightgreen!40,
-  frametitlerulewidth=1pt,
-  breakable=true
+    linecolor=green!40,
+    outerlinewidth=0.5pt,
+    roundcorner=5pt,
+    innertopmargin=10pt,
+    innerbottommargin=10pt,
+    hidealllines=true,
+    leftmargin=10pt,
+    rightmargin=10pt,
+    backgroundcolor=green!5,
+    frametitle={\space},
+    frametitlefont={\normalfont\bfseries\color{green!40!black}},
+    frametitlerule=true,
+    frametitlebackgroundcolor=lightgreen!40,
+    needspace=2em,
+    nobreak=false,
+    splittopskip=2\topsep
 }
 \usepackage{xcolor}
 \usepackage{colortbl} % Required for \rowcolor
@@ -73,6 +82,8 @@
 \usetikzlibrary{shadows} % Required for drop shadow
 \usepackage{mdframed}
 \usepackage[absolute]{textpos} % For absolute positioning
+\usepackage{verbatim}
+\newenvironment{mermaid}{\comment}{\endcomment}
 
 % Page geometry
 \geometry{
@@ -458,20 +469,23 @@ Ce rapport est organisé selon la structure suivante :
 \end{itemize}
 
 % Chapters
-\cleardoublepage
-\input{chapters/chapitre1.tex}
+%comment all chapters all of them leave 3
+
 
 \cleardoublepage
-\input{chapters/chapitre2.tex}
+%\input{chapters/chapitre1.tex}
+
+\cleardoublepage
+%\input{chapters/chapitre2.tex}
 
 \cleardoublepage
 \input{chapters/chapitre3.tex}
 
 \cleardoublepage
-\input{chapters/chapitre4.tex}
+%\input{chapters/chapitre4.tex}
 
 \cleardoublepage
-\input{chapters/chapitre5.tex}
+%\input{chapters/chapitre5.tex}
 
 \cleardoublepage
 \input{chapters/chapitre6.tex}
