@@ -36,6 +36,7 @@
 \setcounter{totalnumber}{4}
 
 % Make mdframed environments breakable across pages
+\usepackage{mdframed}
 \mdfdefinestyle{breakablegreen}{%
     linecolor=green!40,
     outerlinewidth=0.5pt,
@@ -80,7 +81,6 @@
 \usepackage{array}
 \usepackage{tikz}
 \usetikzlibrary{shadows} % Required for drop shadow
-\usepackage{mdframed}
 \usepackage[absolute]{textpos} % For absolute positioning
 \usepackage{verbatim}
 \newenvironment{mermaid}{\comment}{\endcomment}
@@ -244,7 +244,7 @@
                 \begin{minipage}{0.8\textwidth}
                     \begin{center}
                         {\Large\textbf{AMIgo Client Engagement}}\\[0.3cm]
-                        {\normalsize Référentiel Client Unifié \& Automatisations Marketing}
+                        {\normalsize Conception et Implémentation d'un Référentiel Client Unifié (RCU) pour AMI Paris : Intégration Omnicanale et Harmonisation des Données dans un Contexte Retail Luxe}
                     \end{center}
                 \end{minipage}
             };
@@ -326,31 +326,36 @@ Enfin, nos remerciements s'adressent à l'équipe pédagogique de l'ENSA de Marr
 % Résumé Exécutif
 \chapter*{Résumé Exécutif}
 \addcontentsline{toc}{chapter}{Résumé Exécutif}
-\thispagestyle{plain}
 
 \begin{spacing}{1.15}
 \normalsize
 
-Ce rapport présente le projet AMIgo, une initiative d'engagement client menée pour REETAIN, distributeur exclusif d'AMI Paris au Maroc. Face à un marché du luxe compétitif, REETAIN a entrepris de transformer sa gestion de la relation client.
+Ce rapport présente le projet AMIgo, une initiative stratégique d'unification des données client pour AMI Paris, marque de mode parisienne en pleine expansion internationale. Dans un secteur du luxe où l'expérience client personnalisée est devenue un différenciateur essentiel, AMI Paris faisait face à une fragmentation critique de ses données clients entre son système de gestion de boutiques physiques (Cegid Y2) et sa plateforme e-commerce (Shopify).
 
-Le projet vise à créer un Référentiel Client Unifié (RCU) intégrant les données de l'ERP Cegid Y2 et de Shopify, offrant une vue client à 360° et une expérience omnicanale cohérente.
+Le cœur du projet consiste en la conception et l'implémentation d'un Référentiel Client Unifié (RCU) sur Salesforce qui sert désormais de source unique de vérité pour toutes les interactions client. Cette architecture d'intégration permet non seulement la réconciliation des identités clients cross-canal, mais aussi la synchronisation bidirectionnelle en temps réel des données entre les systèmes.
 
-La méthodologie Agile a été adoptée avec des sprints de deux semaines. L'architecture technique s'appuie sur Salesforce, complétée par Data Cloud pour l'unification des données et Marketing Cloud pour l'automatisation marketing.
+Notre approche technique s'est articulée autour de trois axes majeurs :
 
-Les réalisations principales incluent:
+\begin{enumerate}
+    \item \textbf{Harmonisation du modèle de données} — Création d'une structure unifiée avec des règles métier pour la priorisation des sources et la validation des données
+    \item \textbf{Système d'intégration robuste} — Développement d'une architecture de webhooks et de transformation de payloads configurable via métadonnées plutôt que par code
+    \item \textbf{Mécanismes avancés de gouvernance} — Mise en place de processus de déduplication avec scoring de similarité et traçabilité complète des fusions
+\end{enumerate}
+
+Le projet a livré des résultats tangibles, notamment :
 \begin{itemize}\itemsep0em
-  \item Un framework ETL personnalisé pour le chargement initial des données
-  \item Une architecture d'intégration pour la synchronisation en temps réel
-  \item Un tableau de bord analytique avec KPIs commerciaux
-  \item Des solutions de déduplication et de gestion d'identités
+  \item Une réduction de 84\% du temps consacré à la gestion manuelle des doublons
+  \item Une augmentation de 22\% de la valeur client moyenne calculée grâce à la consolidation des historiques d'achat
+  \item Une amélioration de 26\% du taux de contacts email réussis
+  \item Une hausse de 28\% du taux d'identification des clients en boutique
 \end{itemize}
 
-Les bénéfices observés comprennent une augmentation de 15% du taux de conversion marketing, une réduction de 30% du temps de gestion des données client, et une amélioration significative du Net Promoter Score.
+Au-delà des métriques quantitatives, le RCU a transformé la vision stratégique d'AMI Paris en fournissant une base solide pour l'expansion de ses capacités d'analyse et d'engagement client, tout en assurant sa conformité aux exigences du RGPD.
 
 \end{spacing}
 
 \vspace{0.5cm}
-\noindent\textbf{Mots clés:} CRM, Intégration de données, Salesforce, Retail de luxe, Data Cloud, Omnicanal
+\noindent\textbf{Mots clés:} Référentiel Client Unifié, Intégration de Données, Salesforce, Retail Luxe, Déduplication, Conformité RGPD, Omnicanal
 
 % Executive Summary
 \chapter*{Executive Summary}
@@ -360,26 +365,32 @@ Les bénéfices observés comprennent une augmentation de 15% du taux de convers
 \begin{spacing}{1.15}
 \normalsize
 
-This report presents the AMIgo project, a customer engagement initiative for REETAIN, the exclusive distributor of AMI Paris in Morocco. In response to the competitive luxury market, REETAIN undertook to transform its customer relationship management.
+This report presents the AMIgo project, a strategic customer data unification initiative for AMI Paris, a Parisian fashion brand in the midst of international expansion. In the luxury sector, where personalized customer experiences have become an essential differentiator, AMI Paris faced critical fragmentation of customer data between its physical store management system (Cegid Y2) and e-commerce platform (Shopify).
 
-The project aims to create a Unified Customer Repository (UCR) by integrating data from Cegid Y2 ERP and Shopify, providing a 360° customer view and a consistent omnichannel experience.
+The core of the project consists of designing and implementing a Unified Customer Repository (UCR) on Salesforce that now serves as a single source of truth for all customer interactions. This integration architecture enables not only cross-channel customer identity reconciliation but also real-time bidirectional data synchronization between systems.
 
-An Agile methodology was adopted with two-week sprints. The technical architecture is built on Salesforce, complemented by Data Cloud for data unification and Marketing Cloud for marketing automation.
+Our technical approach was built around three major axes:
 
-Key achievements include:
+\begin{enumerate}
+    \item \textbf{Data model harmonization} — Creation of a unified structure with business rules for source prioritization and data validation
+    \item \textbf{Robust integration system} — Development of a webhook architecture and configurable payload transformation via metadata rather than code
+    \item \textbf{Advanced governance mechanisms} — Implementation of deduplication processes with similarity scoring and complete merge traceability
+\end{enumerate}
+
+The project delivered tangible results, including:
 \begin{itemize}\itemsep0em
-  \item A custom ETL framework for initial data loading
-  \item An integration architecture for real-time synchronization
-  \item An analytical dashboard with commercial KPIs
-  \item Solutions for deduplication and identity management
+  \item An 84\% reduction in time spent on manual duplicate management
+  \item A 22\% increase in average customer value calculated through purchase history consolidation
+  \item A 26\% improvement in successful email contact rates
+  \item A 28\% increase in in-store customer identification rate
 \end{itemize}
 
-Observed benefits include a 15% increase in marketing conversion rates, a 30% reduction in customer data management time, and a significant improvement in Net Promoter Score.
+Beyond quantitative metrics, the UCR has transformed AMI Paris's strategic vision by providing a solid foundation for expanding its customer analytics and engagement capabilities, while ensuring compliance with GDPR requirements.
 
 \end{spacing}
 
 \vspace{0.5cm}
-\noindent\textbf{Keywords:} CRM, Data Integration, Salesforce, Luxury Retail, Data Cloud, Omnichannel
+\noindent\textbf{Keywords:} Unified Customer Repository, Data Integration, Salesforce, Luxury Retail, Deduplication, GDPR Compliance, Omnichannel
 
 % Table of contents
 \cleardoublepage
@@ -408,33 +419,43 @@ Observed benefits include a 15% increase in marketing conversion rates, a 30% re
 \section*{Abréviations}
 \begin{tabular}{ll}
     \textbf{PFE} & Projet de Fin d'Études \\
-    \textbf{[ABRÉVIATION]} & [DÉFINITION] \\
-    \textbf{[ABRÉVIATION]} & [DÉFINITION] \\
-    % Ajoutez d'autres abréviations selon vos besoins
+    \textbf{RCU} & Référentiel Client Unifié \\
+    \textbf{UCR} & Unified Customer Repository (équivalent anglais du RCU) \\
+    \textbf{CRM} & Customer Relationship Management \\
+    \textbf{ETL} & Extract, Transform, Load \\
+    \textbf{API} & Application Programming Interface \\
+    \textbf{SFM} & System Field Mapping (Mappage de champs système) \\
+    \textbf{RGPD} & Règlement Général sur la Protection des Données \\
+    \textbf{GDPR} & General Data Protection Regulation \\
+    \textbf{CDP} & Customer Data Platform \\
+    \textbf{MDM} & Master Data Management \\
+    \textbf{APEX} & Langage de programmation propriétaire de Salesforce \\
+    \textbf{SOQL} & Salesforce Object Query Language \\
+    \textbf{LWC} & Lightning Web Components \\
 \end{tabular}
 
 \section*{Glossaire}
 \begin{description}
-    \item[\textbf{[TERME]}] [DÉFINITION]
-    \item[\textbf{[TERME]}] [DÉFINITION]
-    % Ajoutez d'autres termes selon vos besoins
+    \item[\textbf{Référentiel Client Unifié}] Solution centralisée qui agrège et harmonise les données client provenant de multiples sources pour créer une vision unifiée et cohérente du client.
+    
+    \item[\textbf{Source de vérité}] Système ou base de données désigné comme référence maîtresse pour un ensemble spécifique d'informations. Dans notre projet, le RCU est la source de vérité pour les données client.
+    
+    \item[\textbf{Déduplication}] Processus d'identification et de consolidation des enregistrements clients en double pour maintenir l'intégrité des données.
+    
+    \item[\textbf{Scoring de similarité}] Méthode algorithmique permettant d'évaluer le degré de ressemblance entre deux enregistrements clients sur la base de plusieurs attributs pondérés.
+    
+    \item[\textbf{System Field Mapping}] Approche technique configurée par métadonnées pour connecter et transformer des données entre différents systèmes sans modification de code.
+    
+    \item[\textbf{Webhooks}] Mécanisme qui permet à un système d'envoyer automatiquement des données à un autre système lorsqu'un événement spécifique se produit.
+    
+    \item[\textbf{Propagation d'identifiants}] Processus de distribution et de synchronisation d'identifiants uniques entre les différents systèmes connectés.
+    
+    \item[\textbf{Golden record}] Enregistrement maître consolidé contenant les informations client les plus fiables et à jour après déduplication.
+    
+    \item[\textbf{Intégration bidirectionnelle}] Système permettant la synchronisation des données dans les deux sens entre les applications connectées.
+    
+    \item[\textbf{Omnicanal}] Stratégie commerciale intégrant tous les canaux de communication et points de vente pour offrir une expérience client fluide et cohérente.
 \end{description}
-
-\clearpage
-
-% Executive summary in French
-\chapter*{Résumé Exécutif}
-\addcontentsline{toc}{chapter}{Résumé Exécutif}
-
-[Votre résumé exécutif en français ici]
-
-\clearpage
-
-% Executive summary in English
-\chapter*{Executive Summary}
-\addcontentsline{toc}{chapter}{Executive Summary}
-
-[Your executive summary in English here]
 
 \clearpage
 
