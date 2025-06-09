@@ -1,0 +1,14 @@
+%%{init: {
+  "theme": "neutral"
+}}%%
+
+flowchart LR
+    A[Fusion] --> B[Enregistrement<br>MergeAudit__c] 
+    B --> C[Exploitation<br>des données]
+    
+    subgraph C1["Usages"]
+    D[Conformité RGPD]
+    E[Analyse qualité]
+    end
+    
+    C --> C1 

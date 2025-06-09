@@ -1,0 +1,30 @@
+%%{init: {
+  "theme": "neutral",
+  "themeVariables": {
+    "primaryColor": "#e8eaf6",
+    "primaryBorderColor": "#7986cb"
+  }
+}}%%
+
+classDiagram
+    class MergeAudit__c {
+        +WinningRecordId__c
+        +MergedRecordId__c
+        +MergeScore__c
+        +MergeDate__c
+        +MergeInitiatedBy__c
+        +AutomaticMerge__c
+    }
+    
+    class Account {
+        +Id
+        +PersonEmail
+    }
+    
+    class User {
+        +Id
+        +Name
+    }
+    
+    MergeAudit__c --> Account : références
+    MergeAudit__c --> User : référence 

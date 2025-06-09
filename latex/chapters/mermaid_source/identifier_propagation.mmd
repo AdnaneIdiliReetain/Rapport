@@ -1,0 +1,28 @@
+flowchart TD
+    A[Fusion de comptes\nterminée] --> B{Identifiants\nexternes présents?}
+    
+    B -->|CustomerIDAmiParisCom__c| C[Création événement\nRecordPropagation__e\npour Shopify]
+    B -->|CustomerIdY2JP__c| D[Création événement\nRecordPropagation__e\npour Cegid Y2 JP]
+    B -->|CustomerIdY2HQ__c| E[Création événement\nRecordPropagation__e\npour Cegid Y2 WW]
+    
+    C --> F[Publication des\névénements sur\nEventBus]
+    D --> F
+    E --> F
+    
+    F --> G{Traitement\névénement réussi?}
+    G -->|Oui| H[Mise à jour\nsystèmes externes]
+    G -->|Non| I[Log d'erreur et\nnouvelle tentative]
+    
+    subgraph "Salesforce Platform Events"
+    F
+    end
+    
+    subgraph "Systèmes externes"
+    J[Shopify]
+    K[Cegid Y2 JP]
+    L[Cegid Y2 WW]
+    end
+    
+    H --> J
+    H --> K
+    H --> L 

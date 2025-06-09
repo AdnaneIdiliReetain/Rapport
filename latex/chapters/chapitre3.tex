@@ -353,78 +353,182 @@ Ce processus d'anonymisation met en œuvre la politique de rétention des donné
 
 \section{CRM RCU - Data Merge Process (ACE-44)}
 
-Le processus de fusion des données clients est essentiel pour maintenir l'intégrité du RCU dans un contexte où les informations client proviennent de multiples sources avec des niveaux de fiabilité variés.
+\begin{mdframed}[style=breakablegreen]
+Le processus de fusion des données est un composant essentiel du RCU, permettant d'établir une représentation unifiée et fiable de chaque client, indépendamment du canal d'acquisition ou des différences d'information entre les systèmes sources. Cette fusion s'effectue selon des règles métier précises et une hiérarchie claire des sources de données.
+\end{mdframed}
 
-\subsection{Algorithme de Priorisation des Sources}
+\subsection{Stratégie de Fusion des Données Client}
 
-La logique de fusion implémentée suit une priorisation stricte des sources de données, établie en collaboration avec les équipes métier:
+Le processus de fusion implémenté dans le système repose sur plusieurs principes fondamentaux :
 
-\begin{center}
-\begin{tabular}{|>{\bfseries}p{3cm}|p{3cm}|p{7.5cm}|}
-\hline
-\rowcolor{lightblue} Source & Priorité & Justification \\
-\hline
-Cegid Y2 & Haute & Données collectées en boutique avec vérification d'identité en personne \\
-\hline
-Shopify & Moyenne & Données validées par email mais sans vérification physique \\
-\hline
-Formulaires Web & Basse & Données déclaratives sans validation approfondie \\
-\hline
-\end{tabular}
-\end{center}
+\begin{enumerate}
+    \item \textbf{Hiérarchie des sources} : Une priorité claire est établie entre les systèmes sources, avec Cegid Y2 comme source primaire pour les clients issus des boutiques physiques et Shopify comme source primaire pour les clients en ligne.
+    
+    \item \textbf{Préservation des données} : Lors de la fusion, les champs non vides de l'enregistrement maître sont conservés prioritairement sur les données de l'enregistrement fusionné.
+    
+    \item \textbf{Conservation de l'historique} : Les interactions, consentements et transactions des deux enregistrements sont préservés et consolidés dans l'enregistrement maître.
+    
+    \item \textbf{Règles spécifiques par champ} : Certains champs suivent des règles particulières lors de la fusion, notamment pour les préférences client et les dates d'interaction.
+\end{enumerate}
 
-\subsection{Règles de Fusion par Champ}
+Le diagramme ci-dessous illustre le processus global de fusion des comptes clients dans le RCU :
 
-Les règles de fusion sont définies au niveau du champ, permettant une gestion fine de l'intégrité des données:
-
-\begin{center}
-\begin{tabular}{|>{\bfseries}p{4cm}|p{9.5cm}|}
-\hline
-\rowcolor{lightblue} Champ & Règle de Fusion \\
-\hline
-FirstName, LastName & Priorité à la source Cegid Y2, puis Shopify, puis autres sources \\
-\hline
-Email & Conserver l'email validé le plus récemment utilisé \\
-\hline
-Phone & Priorité à Cegid Y2, normalisation au format international \\
-\hline
-PreferredLanguage\_\_c & Conserver la valeur explicitement définie par le client, ou déduire de la dernière transaction \\
-\hline
-PreferredStore\_\_c & Calculé en fonction de la fréquentation et du montant des achats \\
-\hline
-PreferredSA\_\_c & Calculé en fonction des interactions et des achats réalisés \\
-\hline
-CustomerTier\_\_c & Évalué en fonction du montant total des achats sur 12 mois \\
-\hline
-\end{tabular}
-\end{center}
-
-Cette approche granulaire permet d'optimiser la qualité des données tout en préservant les informations les plus pertinentes de chaque source.
-
-\subsection{Traçabilité des Fusions}
-
-% Remplacer le code par un placeholder pour diagram
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
-\fbox{
-\begin{minipage}{0.95\textwidth}
-\textbf{DIAGRAMME : Processus d'audit de fusion des données}\\
-\vspace{0.5em}
-Ce diagramme illustrera le mécanisme de traçabilité des fusions :
-\begin{itemize}
-\item Structure de l'objet MergeAudit\_\_c pour tracer les fusions
-\item Capture des enregistrements fusionnés (master et duplicates)
-\item Documentation des champs modifiés avec valeurs avant/après
-\item Chaîne de traçabilité complète avec horodatage et utilisateur
-\item Capacité d'analyse et reporting des opérations de fusion
-\end{itemize}
-\end{minipage}
-}
-\caption{Traçabilité des opérations de fusion de données}
-\label{fig:merge-audit}
+\includegraphics[width=0.35\textwidth]{chapters/images/account_merge_process.png}
+\caption{Processus de fusion des comptes clients dans le RCU}
+\label{fig:account-merge-process}
 \end{figure}
 
-Cette traçabilité est essentielle non seulement pour la conformité réglementaire, mais aussi pour permettre l'analyse et l'amélioration continue des algorithmes de détection et fusion.
+\noindent Le processus commence par l'identification des doublons potentiels basée principalement sur l'adresse email. Un score de correspondance est calculé en fonction de plusieurs attributs (nom, prénom, téléphone). Si le score dépasse 85\%, la fusion est automatique. Entre 70\% et 85\%, une validation manuelle est requise. En-dessous de 70\%, aucune action de fusion n'est entreprise.
+
+\subsection{Algorithme de Sélection du Record Maître}
+
+La détermination du record maître lors d'une fusion suit une logique précise, implémentée dans le système selon le diagramme suivant :
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.55\textwidth]{chapters/images/master_record_selection.png}
+\caption{Algorithme de sélection du record maître lors de la fusion}
+\label{fig:master-record-selection}
+\end{figure}
+
+\noindent L'algorithme de sélection du record maître suit les étapes suivantes :
+
+\begin{enumerate}
+    \item Si l'un des enregistrements a un niveau \texttt{CustomerTier\_\_c} supérieur (VIP > Premium > Standard), il est sélectionné comme record maître
+    \item À niveau égal, l'enregistrement avec la date de création (\texttt{CreationDate\_\_c}) la plus ancienne devient le record maître
+    \item En cas d'égalité, l'enregistrement avec la date de dernier achat (\texttt{LastPurchaseDate\_\_c}) la plus récente est retenu
+    \item Si tous les critères sont égaux, l'enregistrement avec le plus grand nombre de champs non vides est sélectionné
+\end{enumerate}
+
+\subsection{Propagation des Identifiants Externes}
+
+Un aspect crucial du processus de fusion est la gestion des identifiants externes des différents systèmes. Le système implémente un mécanisme de propagation bidirectionnelle des identifiants via la plateforme d'événements Salesforce :
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.65\textwidth]{chapters/images/identifier_propagation.png}
+\caption{Propagation des identifiants externes après fusion}
+\label{fig:identifier-propagation}
+\end{figure}
+
+Cette propagation utilise la plateforme d'événements Salesforce pour publier des notifications de mise à jour vers les systèmes externes concernés (Shopify, Cegid Y2 WW, Cegid Y2 JP), assurant ainsi la cohérence des identifiants à travers l'écosystème.
+
+\newpage
+
+\subsection{Gestion des Objets Associés}
+
+Lors de la fusion de deux comptes clients, le système doit également gérer la réassignation des objets enfants associés. Cette logique est implémentée à travers un processus automatisé qui traite les objets suivants :
+
+\begin{table}[H]
+\centering
+\caption{Objets associés traités lors d'une fusion de comptes}
+\begin{tabular}{|p{6cm}|p{8.5cm}|}
+\hline
+\rowcolor{lightblue} \textbf{Type d'objet} & \textbf{Stratégie de réassignation} \\
+\hline
+Consent\_\_c & Consolidation avec conservation de l'opt-in le plus récent pour chaque canal \\
+\hline
+Order & Réassignation simple au compte maître \\
+\hline
+Interaction\_c & Réassignation avec recalcul des dates de dernière interaction \\
+\hline
+Note & Consolidation et ajout d'un marqueur indiquant la fusion \\
+\hline
+Attachment & Réassignation simple au compte maître \\
+\hline
+Task & Réassignation avec mise à jour du champ WhatId \\
+\hline
+Event & Réassignation avec mise à jour du champ WhatId \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection{Traçabilité et Audit des Fusions}
+
+\begin{mdframed}[style=breakablegreen]
+La conformité au RGPD et l'intégrité des données exigent une traçabilité complète des opérations de fusion de profils clients. Le système implémente un mécanisme d'audit robuste via l'objet personnalisé \texttt{MergeAudit\_\_c}, documentant chaque fusion avec ses métadonnées essentielles.
+\end{mdframed}
+
+Le système d'audit des fusions de comptes s'articule autour d'une structure de données spécifiquement conçue pour la traçabilité complète des opérations. L'objet personnalisé \texttt{MergeAudit\_\_c} stocke systématiquement les informations suivantes pour chaque fusion effectuée :
+
+\begin{itemize}
+    \item \textbf{Identifiants des enregistrements} (\texttt{WinningRecordId\_\_c} et \texttt{MergedRecordId\_\_c}) — Permettant de retrouver le record maître et le record fusionné
+    \item \textbf{Score de correspondance} (\texttt{MergeScore\_\_c}) — Documentant le niveau de similarité qui a déclenché la fusion
+    \item \textbf{Horodatage} (\texttt{MergeDate\_\_c}) — Enregistrant précisément le moment de l'opération
+    \item \textbf{Source} (\texttt{MergeInitiatedBy\_\_c}) — Identifiant l'utilisateur ou le processus ayant initié la fusion
+    \item \textbf{Mode d'exécution} (\texttt{AutomaticMerge\_\_c}) — Différenciant les fusions automatiques des validations manuelles
+    \item \textbf{Détails supplémentaires} (\texttt{SystemNotes\_\_c}) — Stockant les informations contextuelles sur l'opération
+\end{itemize}
+
+Cette structure établit des relations directes avec les objets \texttt{Account} (références aux comptes fusionnés) et \texttt{User} (référence à l'initiateur), créant ainsi un historique complet et interconnecté des opérations de fusion.
+
+Le système d'audit permet plusieurs cas d'utilisation critiques pour la gestion client :
+
+\begin{enumerate}
+    \item \textbf{Conformité RGPD} — Production de rapports démontrant l'historique complet des traitements de données client, essentiel pour les demandes d'accès ou de suppression
+    \item \textbf{Analyse qualitative} — Évaluation de l'efficacité du modèle de détection des doublons par l'analyse des distributions de scores de correspondance
+    \item \textbf{Résolution de litiges} — Reconstitution des fusions en cas de contestation ou d'anomalie identifiée
+    \item \textbf{Optimisation algorithmique} — Ajustement des seuils et règles de détection basé sur l'analyse des fusions manuellement rejetées ou corrigées
+\end{enumerate}
+
+La conception du système d'audit intègre des mécanismes de performance permettant la conservation à long terme des données sans impact sur les performances opérationnelles. Des rapports préconfigurés facilitent également l'accès rapide aux statistiques de fusion pour les équipes CRM et conformité.
+
+\subsection{Résultats et Métriques}
+
+Le processus de fusion de données a produit des résultats significatifs pour la qualité des données client d'AMI Paris, visualisés dans les graphiques suivants :
+
+\begin{figure}[H]
+\centering
+\begin{minipage}{0.45\textwidth}
+    \centering
+    \includegraphics[width=0.95\textwidth]{chapters/images/merge_results_before.png}
+    \caption{Profils clients avant fusion}
+    \label{fig:before-merge}
+\end{minipage}
+\hfill
+\begin{minipage}{0.45\textwidth}
+    \centering
+    \includegraphics[width=0.95\textwidth]{chapters/images/merge_results_after.png}
+    \caption{Profils clients après fusion}
+    \label{fig:after-merge}
+\end{minipage}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.55\textwidth]{chapters/images/merge_results_duplicates.png}
+\caption{Traitement des doublons identifiés}
+\label{fig:duplicates-merge}
+\end{figure}
+
+Les bénéfices mesurables incluent :
+
+\begin{itemize}
+    \item \textbf{Réduction des doublons} : 17,8\% des comptes ont été identifiés comme doublons potentiels, dont 12,4\% ont été fusionnés automatiquement et 5,4\% via validation manuelle
+    \item \textbf{Amélioration de la qualité des données} : Augmentation de la complétude des profils clients de 68\% à 91\% après fusion
+    \item \textbf{Meilleure visibilité client} : La fusion des transactions cross-canal a permis d'augmenter la valeur client moyenne calculée de 22\%
+    \item \textbf{Efficacité opérationnelle} : Réduction de 84\% du temps consacré à la gestion manuelle des doublons par l'équipe CRM
+\end{itemize}
+
+\begin{table}[H]
+\centering
+\caption{Gains opérationnels mesurés suite à l'implémentation du processus de fusion}
+\begin{tabular}{|p{6cm}|p{3cm}|p{3cm}|p{2cm}|}
+\hline
+\rowcolor{lightblue} \textbf{Indicateur de performance} & \textbf{Avant} & \textbf{Après} & \textbf{Variation} \\
+\hline
+Temps de gestion manuelle (heures/semaine) & 19.5 & 3.1 & -84\% \\
+\hline
+Valeur client moyenne calculée (€) & 720€ & 878€ & +22\% \\
+\hline
+Taux de contacts email réussis & 62\% & 88\% & +26\% \\
+\hline
+Taux d'identification en boutique & 51\% & 79\% & +28\% \\
+\hline
+\end{tabular}
+\end{table}
 
 \section{Résultats et Défis}
 

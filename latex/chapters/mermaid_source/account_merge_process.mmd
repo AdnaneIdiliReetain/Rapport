@@ -1,0 +1,15 @@
+flowchart TD
+    A[Nouveau compte reçu] --> B{Email existe déjà?}
+    B -->|Oui| C[Récupère comptes existants\navec le même email]
+    B -->|Non| D[Pas d'action de fusion]
+    C --> E[Calcul score de correspondance]
+    E --> F{Score >= 85%?}
+    F -->|Oui| G[Fusion automatique]
+    F -->|Non| H{Score >= 70%?}
+    H -->|Oui| I[Création tâche\npour révision manuelle]
+    H -->|Non| J[Pas d'action de fusion]
+    G --> K[Sélection record maître\nselon hiérarchie des critères]
+    I --> L[Attente validation\npar équipe CRM]
+    L -->|Approuvé| G
+    K --> M[Journalisation dans\nMergeAudit__c]
+    M --> N[Propagation des identifiants\nvers systèmes externes] 

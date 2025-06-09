@@ -1,0 +1,23 @@
+flowchart TD
+    A["Début sélection record maître"] --> B{"CustomerTier__c différents?"}
+    B -->|Oui| C["Sélection record avec\nCustomerTier__c supérieur"]
+    B -->|Non| D{"CreationDate__c différents?"}
+    D -->|Oui| E["Sélection record avec\nla plus ancienne CreationDate__c"]
+    D -->|Non| F{"LastPurchaseDate__c différents?"}
+    F -->|Oui| G["Sélection record avec\nla plus récente LastPurchaseDate__c"]
+    F -->|Non| H["Sélection record avec\nplus de champs remplis"]
+    
+    C --> I["Record maître sélectionné"]
+    E --> I
+    G --> I
+    H --> I
+    
+    I --> J["Conservation des identifiants\nexternes des deux enregistrements"]
+    J --> K["Consolidation des objets associés"]
+    K --> L["Fin du processus de fusion"]
+    
+    subgraph "Hiérarchie CustomerTier__c"
+    M["VIP > Premium > Standard > Non spécifié"]
+    end
+
+    classDef special fill:#f9f,stroke:#333,stroke-width:2px; 
