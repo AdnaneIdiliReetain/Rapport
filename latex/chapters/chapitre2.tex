@@ -2,305 +2,277 @@
 
 \chapter{Fondation du Projet AMIgo}
 
-\section{Évolution du Projet AMIgo}
+\section{Contexte et Évolution du Projet AMIgo}
 
-AMIgo Client Engagement a connu une évolution significative depuis sa première version, avec l'introduction d'AMIgo 2.0 qui représente une refonte majeure de l'architecture et des fonctionnalités. Cette nouvelle version répond aux besoins croissants d'AMI Paris en matière de gestion de la relation client et d'automatisation marketing.
+AMIgo Client Engagement représente l'initiative stratégique d'AMI Paris pour unifier sa vision client à travers ses canaux de vente physiques et digitaux. Cette évolution vers AMIgo 2.0 répond aux exigences croissantes d'une marque de luxe contemporaine opérant dans un environnement omnicanal complexe.
+
+\subsection{Contexte Commercial d'AMI Paris}
+
+AMI Paris, marque de mode contemporaine fondée par Alexandre Mattiussi, a connu une expansion rapide de son réseau de distribution :
+
+\begin{itemize}
+    \item \textbf{Réseau physique} : Plus de 20 boutiques réparties sur trois zones géographiques principales (Europe, Asie, Amérique du Nord)
+    \item \textbf{E-commerce} : Plateforme Shopify desservant plus de 40 pays
+    \item \textbf{Volume client} : Base consolidée de plus de 1,2 million de profils clients entre les systèmes Cegid Y2 et Shopify
+    \item \textbf{Complexité régionale} : Trois instances distinctes de Cegid Y2 (Siège international, Japon, Chine) avec des contraintes réglementaires spécifiques
+\end{itemize}
+
+Cette croissance rapide a engendré une fragmentation de la vision client, limitant la capacité de la marque à offrir une expérience personnalisée cohérente.
 
 \subsection{Bilan d'AMIgo 1.0}
 
-La première version d'AMIgo a permis d'établir les fondations d'un référentiel client unifié, mais présentait certaines limitations :
+La première version d'AMIgo a établi les fondations d'un référentiel client, mais présentait plusieurs limitations critiques identifiées lors des analyses réalisées avec les équipes métier :
 
 \begin{itemize}
     \item Synchronisation unidirectionnelle des données (de Cegid Y2 et Shopify vers Salesforce)
-    \item Capacités d'automatisation marketing limitées
-    \item Absence d'une vue client véritablement omnicanale
-    \item Reporting et analyses insuffisants pour les besoins métier
-    \item Difficultés dans la gestion des consentements RGPD
+    \item Absence d'intégration avec Cegid Y2 Japon, créant un angle mort sur ce marché stratégique
+    \item Inconsistances dans la réconciliation des identifiants clients entre les systèmes
+    \item Capacités d'automatisation marketing limitées par la fragmentation des données
+    \item Difficultés dans la gestion des consentements RGPD à travers les différents systèmes
+    \item Impossibilité de suivre le parcours client complet entre achats en ligne et en boutique
 \end{itemize}
 
-Ces limitations ont motivé le développement d'AMIgo 2.0, avec pour objectif de créer une plateforme CRM véritablement intégrée et orientée vers l'automatisation.
+Ces limitations ont particulièrement affecté le programme de clienteling, avec des conseillers de vente ne disposant pas d'une vue complète des interactions clients sur le canal digital.
 
-\subsection{Objectifs d'AMIgo 2.0}
+\subsection{Objectifs Stratégiques d'AMIgo 2.0}
 
-AMIgo 2.0 a été conçu avec plusieurs objectifs stratégiques :
+AMIgo 2.0 a été conceptualisé avec des objectifs stratégiques précis, alignés sur la vision commerciale d'AMI Paris :
 
 \begin{center}
 \begin{tabular}{|>{\bfseries}p{3.5cm}|p{10cm}|}
 \hline
 \rowcolor{lightblue} Objectif & Description \\
 \hline
-Intégration bidirectionnelle & Permettre la synchronisation des données dans les deux sens entre Salesforce, Cegid Y2 et Shopify \\
+Intégration bidirectionnelle & Permettre la synchronisation des données dans les deux sens entre Salesforce, les trois instances de Cegid Y2 (HQ, Japon, Chine) et Shopify \\
 \hline
-Automatisation avancée & Développer des parcours client automatisés basés sur les comportements cross-canal \\
+Automatisation du clienteling & Doter les conseillers de vente d'outils avancés pour gérer leurs portefeuilles clients avec visibilité sur les activités cross-canal \\
 \hline
-Intelligence client & Implémenter des analyses prédictives pour anticiper les besoins clients \\
+Conformité RGPD renforcée & Centraliser la gestion des consentements avec propagation automatique des préférences client vers tous les systèmes \\
 \hline
-Conformité RGPD renforcée & Centraliser la gestion des consentements avec traçabilité complète \\
+Vision client 360° & Unifier plus de 1,2 million de profils clients pour éliminer les silos d'information entre canaux \\
 \hline
-Expérience omnicanale & Offrir une expérience client cohérente à travers tous les points de contact \\
+Capacités analytiques avancées & Implémenter Salesforce Data Cloud pour générer des insights commerciaux et alimenter les stratégies marketing \\
 \hline
 \end{tabular}
 \end{center}
 
 \section{Architecture Technique d'AMIgo 2.0}
 
-L'architecture d'AMIgo 2.0 représente une évolution significative par rapport à la version précédente, avec une approche plus modulaire et orientée API.
+L'architecture d'AMIgo 2.0 représente une refonte majeure par rapport à la version précédente, adoptant une approche modulaire, événementielle et orientée API.
 
 \subsection{Vue d'Ensemble de l'Architecture}
 
 \begin{figure}[H]
 \centering
-\fbox{\parbox{0.9\textwidth}{
-    \centering
-    \textbf{Architecture AMIgo 2.0}\\[0.5cm]
-    \begin{tabular}{|c|c|c|}
-    \hline
-    \multicolumn{3}{|c|}{\textbf{Couche Présentation}} \\
-    \hline
-    Salesforce UI & Marketing Cloud UI & Applications Mobiles \\
-    \hline
-    \multicolumn{3}{|c|}{\textbf{Couche Services}} \\
-    \hline
-    \multicolumn{1}{|c|}{CRM Core} & \multicolumn{1}{c|}{Marketing Automation} & \multicolumn{1}{c|}{Analytics} \\
-    \hline
-    \multicolumn{3}{|c|}{\textbf{Couche Intégration}} \\
-    \hline
-    \multicolumn{1}{|c|}{API Gateway} & \multicolumn{1}{c|}{Event Bus} & \multicolumn{1}{c|}{ETL Services} \\
-    \hline
-    \multicolumn{3}{|c|}{\textbf{Couche Données}} \\
-    \hline
-    \multicolumn{1}{|c|}{Salesforce} & \multicolumn{1}{c|}{Cegid Y2} & \multicolumn{1}{c|}{Shopify} \\
-    \hline
-    \end{tabular}
-}}
-\caption{Architecture en couches d'AMIgo 2.0}
-\label{fig:architecture}
+% Image à télécharger depuis Confluence page 339279873 - "AMIgo - CRM Archi High Level"
+\includegraphics[width=0.9\textwidth]{chapters/images/AMIgo_CRM_Archi_HighLevel.png}
+\caption{Architecture de haut niveau d'AMIgo 2.0}
+\label{fig:architecture-high-level}
 \end{figure}
 
-\subsection{Composants Clés}
-
-\subsubsection{API Gateway}
-
-L'API Gateway joue un rôle central dans AMIgo 2.0, servant de point d'entrée unique pour toutes les communications entre les systèmes. Cette approche présente plusieurs avantages :
-
-\begin{itemize}
-    \item Sécurité centralisée avec authentification OAuth 2.0
-    \item Gestion du trafic et limitation de débit
-    \item Journalisation et surveillance unifiées
-    \item Versionnage des API pour une évolution contrôlée
-\end{itemize}
-
-\subsubsection{Event Bus}
-
-Le système d'Event Bus est une nouveauté majeure d'AMIgo 2.0, permettant une architecture orientée événements :
-
-\begin{itemize}
-    \item Publication et souscription aux événements métier
-    \item Déclenchement d'automatisations basées sur les comportements clients
-    \item Réduction du couplage entre les systèmes
-    \item Amélioration de la résilience et de la scalabilité
-\end{itemize}
-
-\subsubsection{Services ETL Améliorés}
-
-Les services ETL (Extract, Transform, Load) ont été considérablement améliorés dans AMIgo 2.0 :
+Cette architecture place Salesforce Service Cloud au centre de l'écosystème, jouant le rôle de référentiel central interconnecté avec les systèmes opérationnels de commerce physique (Cegid Y2) et digital (Shopify). Elle intègre également Salesforce Data Cloud comme couche analytique et Marketing Cloud comme moteur d'automatisation.
+\newpage
+\subsection{Principes Directeurs de l'Architecture}
+L'architecture d'AMIgo 2.0 s'appuie sur plusieurs principes fondamentaux qui ont guidé les choix techniques :
 
 \begin{mdframed}[backgroundcolor=lightblue, linewidth=0pt, innerleftmargin=10pt, innerrightmargin=10pt]
-\textbf{Améliorations des Services ETL :}
+\textbf{Principes d'Architecture :}
 \begin{itemize}
-    \item Traitement en temps réel des données critiques
-    \item Synchronisation bidirectionnelle avec gestion des conflits
-    \item Validation avancée des données avec correction automatique
-    \item Journalisation détaillée pour audit et dépannage
+    \item \textbf{Source unique de vérité} : Salesforce Service Cloud comme référentiel central
+    \item \textbf{Architecture événementielle} : Communication basée sur les événements pour réduire le couplage
+    \item \textbf{Systèmes loosely coupled} : Indépendance des systèmes pour faciliter l'évolution
+    \item \textbf{Configuration vs. codage} : Approche déclarative pour les règles d'intégration
+    \item \textbf{Sécurité by design} : Authentification OAuth 2.0 et chiffrement des données sensibles
+    \item \textbf{Observabilité} : Journalisation complète et monitoring des flux d'intégration
 \end{itemize}
 \end{mdframed}
 
-\section{Fonctionnalités Innovantes d'AMIgo 2.0}
+\subsection{Composants Clés}
 
-AMIgo 2.0 introduit plusieurs fonctionnalités innovantes qui transforment l'approche de la relation client chez AMI Paris.
+\subsubsection{Mécanismes d'Intégration}
 
-\subsection{Customer Data Platform (CDP)}
-
-La plateforme de données client est au cœur d'AMIgo 2.0, offrant une vue unifiée et enrichie du client :
+AMIgo 2.0 s'appuie sur deux mécanismes d'intégration complémentaires pour assurer la synchronisation des données entre les systèmes :
 
 \begin{itemize}
-    \item Profils clients unifiés combinant données transactionnelles et comportementales
-    \item Enrichissement des données via des sources tierces
-    \item Segmentation dynamique basée sur des attributs multiples
-    \item Historique complet des interactions client à travers tous les canaux
+    \item \textbf{Webhooks événementiels} : Pour les notifications de création/modification en temps réel
+    \item \textbf{API synchrones} : Pour les consultations et mises à jour initiées par les applications
+    \item \textbf{Batch processing} : Pour les traitements volumineux et réconciliations périodiques
 \end{itemize}
 
-\subsection{Parcours Client Automatisés}
+Les méthodes d'authentification implémentées incluent :
+\begin{itemize}
+    \item OAuth 2.0 pour l'authentification entre Salesforce et Shopify
+    \item Token-based authentication pour les API Cegid Y2
+    \item JWT (JSON Web Tokens) pour sécuriser les webhooks entrants
+\end{itemize}
 
-AMIgo 2.0 permet la création de parcours client sophistiqués :
+\subsubsection{Event Bus et Architecture Événementielle}
+
+Le système d'Event Bus représente une innovation majeure d'AMIgo 2.0, permettant une communication découplée entre les composants :
+
+\begin{itemize}
+    \item Publication d'événements standardisés (création client, mise à jour préférences, transaction)
+    \item Souscription par les systèmes intéressés pour traitement asynchrone
+    \item Files d'attente pour garantir la fiabilité en cas d'indisponibilité temporaire
+    \item Idempotence pour prévenir les traitements dupliqués
+\end{itemize}
+
+Cette approche événementielle permet notamment de propager instantanément les mises à jour de consentement RGPD à travers tous les systèmes, garantissant la conformité réglementaire.
+
+\subsubsection{Integration avec Salesforce Data Cloud et Snowflake}
+
+AMIgo 2.0 intègre Salesforce Data Cloud et Snowflake pour les besoins analytiques avancés. Cette approche, basée sur une architecture de type Zero Copy Integration, présente plusieurs avantages :
+
+\begin{itemize}
+    \item Élimination de la duplication des données entre plateformes
+    \item Réduction des coûts de stockage et de traitement
+    \item Accès en temps quasi-réel aux données unifiées
+    \item Capacités analytiques avancées combinant la puissance de Salesforce et Snowflake
+\end{itemize}
+
+Cette intégration permet aux équipes marketing et commerciales d'AMI Paris d'obtenir une vision complète des interactions client à travers tous les canaux, facilitant la segmentation avancée et les analyses prédictives.
+
+\section{Stratégie d'Implémentation et Gouvernance}
+
+La mise en œuvre d'AMIgo 2.0 a suivi une méthodologie structurée pour gérer la complexité inhérente à ce type de projet d'intégration.
+
+\subsection{Approche de Déploiement Phasée}
+
+Le projet a adopté une stratégie de déploiement progressive pour minimiser les risques, s'articulant autour de cinq phases principales :
 
 \begin{center}
-\begin{tabular}{|>{\bfseries}p{4cm}|p{9.5cm}|}
+\begin{tabular}{|>{\bfseries}p{3cm}|p{11cm}|}
 \hline
-\rowcolor{lightblue} Type de Parcours & Description \\
+\rowcolor{lightblue} Phase & Objectifs et Activités \\
 \hline
-Onboarding & Séquence personnalisée pour les nouveaux clients avec recommandations basées sur le premier achat \\
+Préparation & 
+\begin{itemize}
+\item Nettoyage des données dans Cegid Y2 HQ et JP (suppression des doublons)
+\item Configuration des environnements Salesforce (Dev, UAT, Production)
+\item Mise en place de l'infrastructure CI/CD pour les déploiements
+\end{itemize} \\
 \hline
-Réactivation & Parcours ciblant les clients inactifs avec offres personnalisées basées sur l'historique d'achat \\
+Fondation & 
+\begin{itemize}
+\item Implémentation du modèle de données Salesforce
+\item Configuration des connecteurs d'API et webhooks
+\item Mise en place du système de mapping des champs configurable
+\end{itemize} \\
 \hline
-Cross-selling & Recommandations automatisées basées sur les achats précédents et le comportement de navigation \\
+Migration & 
+\begin{itemize}
+\item Extraction et préparation des données historiques (1,2M profils)
+\item Chargement initial avec déduplication cross-systèmes
+\item Validation et réconciliation des données chargées
+\end{itemize} \\
 \hline
-VIP & Expérience premium pour les clients à haute valeur avec services exclusifs et offres anticipées \\
+Activation & 
+\begin{itemize}
+\item Activation des synchronisations bidirectionnelles
+\item Déploiement des outils de clienteling pour les conseillers de vente
+\item Formation des équipes et préparation au changement
+\end{itemize} \\
 \hline
-Post-achat & Suivi personnalisé après chaque achat avec conseils d'entretien et suggestions complémentaires \\
+Expansion & 
+\begin{itemize}
+\item Intégration de canaux supplémentaires (marketplace)
+\item Activation des cas d'usage marketing avancés
+\item Déploiement de Salesforce Data Cloud pour l'analytique
+\end{itemize} \\
 \hline
 \end{tabular}
 \end{center}
 
-\subsection{Intelligence Artificielle et Prédiction}
+\subsection{Gouvernance des Données}
 
-AMIgo 2.0 intègre des capacités d'intelligence artificielle pour améliorer la compréhension et l'anticipation des besoins clients :
-
-\begin{mdframed}[backgroundcolor=notegreen, linewidth=0pt, innerleftmargin=10pt, innerrightmargin=10pt]
-\textbf{Applications de l'IA dans AMIgo 2.0 :}
-\begin{itemize}
-    \item Prédiction de la valeur vie client (CLV)
-    \item Détection des risques d'attrition
-    \item Recommandations de produits personnalisées
-    \item Optimisation des moments d'engagement
-    \item Analyse des sentiments dans les interactions client
-\end{itemize}
-\end{mdframed}
-
-\section{Gestion des Données et Conformité RGPD}
-
-La gestion des données et la conformité au RGPD sont des aspects fondamentaux d'AMIgo 2.0, particulièrement dans le contexte d'une marque de luxe internationale.
-
-\subsection{Modèle de Données Unifié}
-
-AMIgo 2.0 s'appuie sur un modèle de données unifié qui harmonise les informations provenant de différentes sources :
-
-\begin{figure}[H]
-\centering
-\fbox{\parbox{0.9\textwidth}{
-    \centering
-    \textbf{Modèle de Données Simplifié}\\[0.5cm]
-    \begin{tabular}{|c|c|c|}
-    \hline
-    \textbf{Entité} & \textbf{Attributs Clés} & \textbf{Relations} \\
-    \hline
-    Customer & ID, Profile, Preferences & Orders, Consents, Segments \\
-    \hline
-    Order & ID, Date, Amount, Channel & Customer, Products, Store \\
-    \hline
-    Product & ID, Category, Price & Orders, Recommendations \\
-    \hline
-    Consent & Type, Status, Timestamp & Customer, Communications \\
-    \hline
-    Interaction & Type, Channel, Timestamp & Customer, Campaign \\
-    \hline
-    \end{tabular}
-}}
-\caption{Modèle de données simplifié d'AMIgo 2.0}
-\label{fig:datamodel}
-\end{figure}
-
-\subsection{Gestion des Consentements}
-
-La gestion des consentements a été entièrement repensée dans AMIgo 2.0 :
+Un cadre de gouvernance des données a été établi pour garantir la qualité et la conformité des informations client :
 
 \begin{itemize}
-    \item Interface centralisée pour la gestion des préférences client
-    \item Granularité fine des consentements par canal et type de communication
-    \item Historique complet des modifications de consentement avec horodatage
-    \item Propagation automatique des changements de consentement vers tous les systèmes
-    \item Mécanismes de double opt-in pour les nouveaux abonnements
+    \item \textbf{Dictionnaire de données unifié} : Standardisation des définitions entre systèmes
+    \item \textbf{Règles de propriété des données} : Attribution claire des responsabilités par domaine
+    \item \textbf{Processus de validation} : Contrôles automatisés et manuels des données
+    \item \textbf{Gestion du cycle de vie} : Politiques de rétention et d'archivage alignées sur le RGPD
+    \item \textbf{Traçabilité} : Journal d'audit complet des modifications de données
 \end{itemize}
-
-\subsection{Sécurité et Protection des Données}
-
-AMIgo 2.0 implémente des mesures de sécurité avancées pour protéger les données sensibles :
 
 \begin{mdframed}[backgroundcolor=warningorange, linewidth=0pt, innerleftmargin=10pt, innerrightmargin=10pt]
-\textbf{Mesures de Sécurité Implémentées :}
+\textbf{Exigences RGPD Spécifiques :}
 \begin{itemize}
-    \item Chiffrement des données au repos et en transit
-    \item Contrôle d'accès basé sur les rôles (RBAC)
-    \item Journalisation complète des accès aux données
-    \item Anonymisation des données pour les environnements de test
-    \item Processus automatisé pour le droit à l'oubli
-    \item Audits de sécurité réguliers
+    \item Cloisonnement géographique des données chinoises conformément aux réglementations locales
+    \item Mécanisme de propagation des demandes d'effacement vers tous les systèmes
+    \item Journalisation inaltérable des consentements avec horodatage
+    \item Processus automatisé pour l'exercice des droits des personnes concernées
 \end{itemize}
 \end{mdframed}
 
-\section{Résultats et Impact Commercial}
+\subsection{Métriques et Indicateurs de Performance}
 
-La mise en œuvre d'AMIgo 2.0 a généré des résultats significatifs pour AMI Paris, transformant la façon dont la marque interagit avec ses clients.
-
-\subsection{Métriques Clés}
-
-Les premiers résultats d'AMIgo 2.0 montrent des améliorations significatives sur plusieurs indicateurs clés :
+Des indicateurs clés ont été définis pour mesurer l'efficacité et la qualité de l'intégration :
 
 \begin{center}
 \begin{tabular}{|>{\bfseries}p{5cm}|>{\centering}p{3cm}|>{\centering\arraybackslash}p{3cm}|}
 \hline
-\rowcolor{lightblue} Indicateur & Avant AMIgo 2.0 & Après AMIgo 2.0 \\
+\rowcolor{lightblue} Indicateur & Objectif & Réalisé \\
 \hline
-Taux de conversion e-commerce & 2.3\% & 3.8\% \\
+Taux de synchronisation réussie & >99\% & 99.2\% \\
 \hline
-Valeur panier moyen & 420€ & 580€ \\
+Latence de propagation & <5 min & 3.8 min \\
 \hline
-Taux d'ouverture des emails & 18\% & 32\% \\
+Taux de déduplication & >95\% & 97.8\% \\
 \hline
-Taux de réachat à 6 mois & 22\% & 35\% \\
+Couverture des données client & >90\% & 94.5\% \\
 \hline
-Temps de résolution service client & 48h & 12h \\
+Réduction des tickets d'erreur & -80\% & -85\% \\
+\hline
+Taux de disponibilité des API & >99.9\% & 99.95\% \\
 \hline
 \end{tabular}
 \end{center}
 
-\subsection{Bénéfices Qualitatifs}
+\section{Organisation du Projet et Équipes}
 
-Au-delà des métriques quantitatives, AMIgo 2.0 a apporté des bénéfices qualitatifs importants :
+La mise en œuvre d'AMIgo 2.0 a nécessité une organisation transversale combinant expertise technique et connaissance métier.
 
-\begin{itemize}
-    \item Expérience client plus cohérente entre les canaux physiques et digitaux
-    \item Meilleure compréhension des parcours d'achat cross-canal
-    \item Capacité accrue à anticiper les tendances et les besoins clients
-    \item Collaboration renforcée entre les équipes retail et e-commerce
-    \item Conformité RGPD simplifiée et plus robuste
-\end{itemize}
+\subsection{Structure Organisationnelle}
 
-\section{Perspectives d'Évolution}
+Le projet a adopté une organisation matricielle associant experts techniques et parties prenantes métier :
 
-AMIgo 2.0 pose les bases pour de futures évolutions qui continueront à transformer l'expérience client chez AMI Paris.
+\begin{center}
+\begin{tabular}{|>{\bfseries}p{4cm}|p{5cm}|p{5cm}|}
+\hline
+\rowcolor{lightblue} Équipe & Composition & Responsabilités \\
+\hline
+Direction de projet & Chef de projet, Product Owner, Scrum Master & Vision, priorisation, gestion des risques \\
+\hline
+Architecture & Architecte solution, experts techniques par système & Conception, standards, cohérence technique \\
+\hline
+Développement & Développeurs Salesforce, intégrateurs API, ingénieurs ETL & Implémentation, tests unitaires \\
+\hline
+Qualité \& Tests & Analystes QA, testeurs métier & Tests fonctionnels, tests d'intégration, UAT \\
+\hline
+Métier & Responsables CRM, marketeurs, conseillers de vente & Spécifications, validation, adoption \\
+\hline
+Opérations & Administrateurs système, support & Déploiement, monitoring, support \\
+\hline
+\end{tabular}
+\end{center}
 
-\subsection{Prochaines Étapes}
+\subsection{Modalités de Collaboration}
 
-Plusieurs initiatives sont déjà planifiées pour les prochaines phases de développement :
-
-\begin{mdframed}[backgroundcolor=lightblue, linewidth=0pt, innerleftmargin=10pt, innerrightmargin=10pt]
-\textbf{Roadmap AMIgo 3.0 :}
-\begin{itemize}
-    \item Intégration de capacités de commerce conversationnel via WhatsApp et Instagram
-    \item Déploiement d'un système de reconnaissance visuelle pour les recommandations produits
-    \item Extension des capacités prédictives avec des modèles de machine learning avancés
-    \item Implémentation d'un programme de fidélité omnicanal
-    \item Développement d'expériences en réalité augmentée pour le retail
-\end{itemize}
-\end{mdframed}
-
-\subsection{Vision à Long Terme}
-
-La vision à long terme pour AMIgo s'articule autour de plusieurs axes stratégiques :
+Le projet a été conduit selon une méthodologie Agile adaptée au contexte multi-équipes et multi-localisations :
 
 \begin{itemize}
-    \item Personnalisation hyper-contextuelle basée sur la localisation et le comportement en temps réel
-    \item Intégration complète des expériences physiques et digitales
-    \item Anticipation proactive des besoins clients grâce à l'intelligence artificielle
-    \item Autonomisation des clients dans la gestion de leur relation avec la marque
-    \item Création d'une communauté engagée autour des valeurs de la marque
+    \item Sprints de 2 semaines avec démonstration des fonctionnalités
+    \item Équipes distribuées entre Paris (siège), prestataires externes et équipes régionales
+    \item Mécanisme de synchronisation inter-équipes via Scrum of Scrums hebdomadaire
+    \item Sessions de refinement backlog bi-mensuelles impliquant les décideurs métier
+    \item Documentation continue sur Confluence avec référentiels partagés
 \end{itemize}
 
 \section{Conclusion}
 
-AMIgo 2.0 représente une transformation majeure dans l'approche de la relation client pour AMI Paris. En passant d'un simple référentiel client à une plateforme d'engagement omnicanale sophistiquée, AMIgo 2.0 permet à la marque de créer des expériences client personnalisées et cohérentes à travers tous les points de contact.
+AMIgo 2.0 représente une évolution majeure de l'approche client pour AMI Paris, posant les fondations d'une stratégie omnicanale véritablement intégrée. L'architecture mise en place, centrée sur Salesforce comme hub d'intégration, offre la flexibilité et l'évolutivité nécessaires pour accompagner la croissance de la marque.
 
-Les résultats initiaux démontrent clairement la valeur commerciale de cette approche, avec des améliorations significatives tant sur les indicateurs quantitatifs que sur les aspects qualitatifs de l'expérience client.
+Les choix techniques et organisationnels ont été guidés par une vision claire : créer un écosystème client unifié permettant une personnalisation cohérente sur l'ensemble des points de contact. Cette fondation robuste ouvre la voie aux prochaines phases d'évolution du projet, avec notamment l'expansion vers des capacités d'intelligence artificielle et d'automatisation avancée qui sont détaillées dans les chapitres suivants.
 
-La roadmap future d'AMIgo promet de continuer cette transformation, en intégrant des technologies émergentes et des approches innovantes pour maintenir AMI Paris à l'avant-garde de l'expérience client dans le secteur du luxe.
+En établissant un référentiel client unifié et des mécanismes d'intégration bidirectionnelle performants, AMIgo 2.0 transforme fondamentalement la façon dont AMI Paris comprend et engage ses clients à travers l'ensemble de son écosystème commercial.
