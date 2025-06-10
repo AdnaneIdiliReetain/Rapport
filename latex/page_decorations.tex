@@ -1,0 +1,161 @@
+% Page Decorations for AMI Paris PFE Report
+% This file contains customized page styling and decorative elements
+
+% Required packages - to be included in preamble.tex if not already there
+% \usepackage{tikz}
+% \usepackage{eso-pic}
+
+% Define AMI Paris colors if not already defined
+\definecolor{amidarkblue}{RGB}{0, 29, 61}
+\definecolor{amilightblue}{RGB}{191, 215, 234}
+\definecolor{amigold}{RGB}{184, 134, 11}
+
+% Counter to track chapter pages for special styling
+\newcounter{chapterpage}
+
+% Option 1: Elegant corner decorations
+\newcommand{\cornerdecorations}{%
+\begin{tikzpicture}[remember picture, overlay]
+    % Top-left corner
+    \draw[line width=1pt, amidarkblue] 
+        ([shift={(0.5cm,-0.5cm)}]current page.north west) -- 
+        ([shift={(2.5cm,-0.5cm)}]current page.north west);
+    \draw[line width=1pt, amidarkblue] 
+        ([shift={(0.5cm,-0.5cm)}]current page.north west) -- 
+        ([shift={(0.5cm,-2.5cm)}]current page.north west);
+    
+    % Top-right corner
+    \draw[line width=1pt, amidarkblue] 
+        ([shift={(-0.5cm,-0.5cm)}]current page.north east) -- 
+        ([shift={(-2.5cm,-0.5cm)}]current page.north east);
+    \draw[line width=1pt, amidarkblue] 
+        ([shift={(-0.5cm,-0.5cm)}]current page.north east) -- 
+        ([shift={(-0.5cm,-2.5cm)}]current page.north east);
+    
+    % Bottom-left corner
+    \draw[line width=1pt, amidarkblue] 
+        ([shift={(0.5cm,0.5cm)}]current page.south west) -- 
+        ([shift={(2.5cm,0.5cm)}]current page.south west);
+    \draw[line width=1pt, amidarkblue] 
+        ([shift={(0.5cm,0.5cm)}]current page.south west) -- 
+        ([shift={(0.5cm,2.5cm)}]current page.south west);
+    
+    % Bottom-right corner
+    \draw[line width=1pt, amidarkblue] 
+        ([shift={(-0.5cm,0.5cm)}]current page.south east) -- 
+        ([shift={(-2.5cm,0.5cm)}]current page.south east);
+    \draw[line width=1pt, amidarkblue] 
+        ([shift={(-0.5cm,0.5cm)}]current page.south east) -- 
+        ([shift={(-0.5cm,2.5cm)}]current page.south east);
+\end{tikzpicture}%
+}
+
+% Option 2: Full border with gold accent
+\newcommand{\fullborder}{%
+\begin{tikzpicture}[remember picture, overlay]
+    % Main border
+    \draw[line width=1pt, amidarkblue] 
+        ([shift={(1cm,-1cm)}]current page.north west) rectangle 
+        ([shift={(-1cm,1cm)}]current page.south east);
+    
+    % Gold accent in corners
+    \draw[line width=1.5pt, amigold] 
+        ([shift={(1cm,-1cm)}]current page.north west) -- 
+        ([shift={(3cm,-1cm)}]current page.north west);
+    \draw[line width=1.5pt, amigold] 
+        ([shift={(1cm,-1cm)}]current page.north west) -- 
+        ([shift={(1cm,-3cm)}]current page.north west);
+    
+    \draw[line width=1.5pt, amigold] 
+        ([shift={(-1cm,-1cm)}]current page.north east) -- 
+        ([shift={(-3cm,-1cm)}]current page.north east);
+    \draw[line width=1.5pt, amigold] 
+        ([shift={(-1cm,-1cm)}]current page.north east) -- 
+        ([shift={(-1cm,-3cm)}]current page.north east);
+    
+    \draw[line width=1.5pt, amigold] 
+        ([shift={(1cm,1cm)}]current page.south west) -- 
+        ([shift={(3cm,1cm)}]current page.south west);
+    \draw[line width=1.5pt, amigold] 
+        ([shift={(1cm,1cm)}]current page.south west) -- 
+        ([shift={(1cm,3cm)}]current page.south west);
+    
+    \draw[line width=1.5pt, amigold] 
+        ([shift={(-1cm,1cm)}]current page.south east) -- 
+        ([shift={(-3cm,1cm)}]current page.south east);
+    \draw[line width=1.5pt, amigold] 
+        ([shift={(-1cm,1cm)}]current page.south east) -- 
+        ([shift={(-1cm,3cm)}]current page.south east);
+\end{tikzpicture}%
+}
+
+% Option 3: Subtle side decoration
+\newcommand{\sidedecoration}{%
+\begin{tikzpicture}[remember picture, overlay]
+    % Left side decoration
+    \fill[amilightblue] 
+        ([xshift=0.2cm]current page.west) -- 
+        ([xshift=0.5cm]current page.west) -- 
+        ([xshift=0.5cm]current page.south west) -- 
+        ([xshift=0.2cm]current page.south west) -- cycle;
+    
+    % Right side thin line
+    \draw[line width=0.5pt, amidarkblue] 
+        ([xshift=-0.8cm]current page.east) -- 
+        ([xshift=-0.8cm]current page.south east);
+        
+    % Special chapter marker on the side (for chapter pages only)
+    \ifnum\value{page}=\thechapterpage
+        \fill[amigold] 
+            ([xshift=0.2cm,yshift=-5cm]current page.north west) -- 
+            ([xshift=0.5cm,yshift=-5cm]current page.north west) -- 
+            ([xshift=0.5cm,yshift=-8cm]current page.north west) -- 
+            ([xshift=0.2cm,yshift=-8cm]current page.north west) -- cycle;
+    \fi
+\end{tikzpicture}%
+}
+
+% Enhanced chapter headers
+\newcommand{\fancychapterheading}[1]{%
+\begin{tikzpicture}[remember picture, overlay]
+    % Background rectangle
+    \fill[amilightblue!25] 
+        ([yshift=0cm]current page.north west) rectangle 
+        ([yshift=-5cm]current page.north east);
+    
+    % Gold accent line
+    \draw[line width=2.5pt, amigold] 
+        ([yshift=-5cm]current page.north west) -- 
+        ([yshift=-5cm]current page.north east);
+    
+    % Chapter title text
+    \node[anchor=east, font=\Huge\bfseries, text=amidarkblue] 
+        at ([xshift=-2cm,yshift=-3cm]current page.north east) {#1};
+\end{tikzpicture}%
+}
+
+% ----- BORDER ACTIVATION SYSTEM -----
+% Use \setBorderStyle{style} to choose your border style
+% Where style can be: none, corner, full, side
+
+\newcommand{\setBorderStyle}[1]{
+    % First remove any existing border
+    \RemoveFromShipoutPictureBG*
+    
+    % Then apply the requested style
+    \ifthenelse{\equal{#1}{corner}}{
+        \AddToShipoutPictureBG{\cornerdecorations}
+    }{}
+    \ifthenelse{\equal{#1}{full}}{
+        \AddToShipoutPictureBG{\fullborder}
+    }{}
+    \ifthenelse{\equal{#1}{side}}{
+        \AddToShipoutPictureBG{\sidedecoration}
+    }{}
+    % For "none" we do nothing, border remains removed
+}
+
+% To apply fancy chapter heading, use:
+% \chapter{Title}
+% \setcounter{chapterpage}{\value{page}}
+% \fancychapterheading{Title} 

@@ -1,0 +1,51 @@
+flowchart TD
+    subgraph "Extraction Phase"
+        CegidExtractor[CegidCustomerExtractor]
+        ShopifyExtractor[ShopifyCustomerExtractor]
+    end
+    
+    subgraph "Transformation Phase"
+        Normalization[Name/Email/Phone\nNormalization]
+        Enrichment[Data Enrichment]
+        Deduplication[Preliminary\nDeduplication]
+    end
+    
+    subgraph "Loading Phase"
+        BulkAPI[Bulk API 2.0]
+        ValidationRules[Validation Rules]
+        Logging[Error Logging]
+    end
+    
+    CegidExtractor --> |Raw Data| Normalization
+    ShopifyExtractor --> |Raw Data| Normalization
+    
+    Normalization --> Enrichment
+    Enrichment --> Deduplication
+    Deduplication --> BulkAPI
+    
+    BulkAPI --> ValidationRules
+    ValidationRules --> |Success| Logging
+    ValidationRules --> |Failure| Normalization
+    
+    classDef extraction fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    classDef transformation fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px
+    classDef loading fill:#fff8e1,stroke:#ff8f00,stroke-width:2px
+    
+    class CegidExtractor,ShopifyExtractor extraction
+    class Normalization,Enrichment,Deduplication transformation
+    class BulkAPI,ValidationRules,Logging loading
+
+%% WHIMSICAL INSTRUCTIONS:
+%% Create an ETL (Extract-Transform-Load) process flow diagram
+%% The diagram should illustrate:
+%% 1. Three main horizontal or vertical sections with transparent backgrounds and visible borders:
+%%    - Extraction Phase (with extractors for different data sources)
+%%    - Transformation Phase (showing data cleaning and processing steps)
+%%    - Loading Phase (showing how data is loaded into the target system)
+%% 2. Clear directional arrows showing process flow between components
+%% 3. A feedback loop from validation failures back to normalization
+%% 4. Different color scheme for each phase (extraction, transformation, loading)
+%% 5. Simple, clean icons representing each step (e.g., database icon for extractors, gears for transformation)
+%% 6. Label all connections with the type of data being passed
+%% 7. Make sure the diagram clearly shows the progression from raw data extraction to final data loading
+%% 8. Use a professional, visually pleasing layout suitable for a technical business document 

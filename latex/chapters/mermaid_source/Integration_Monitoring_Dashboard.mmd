@@ -1,0 +1,59 @@
+graph TB
+    subgraph Dashboard
+        direction LR
+        
+        subgraph VolumeMetrics["Volume Metrics"]
+            VM1[Daily Transaction Volume]
+            VM2[Source System Breakdown]
+            VM3[Peak Hour Analysis]
+        end
+        
+        subgraph PerformanceMetrics["Performance Metrics"]
+            PM1[Avg Response Time]
+            PM2[SLA Compliance]
+            PM3[Error Rate]
+        end
+        
+        subgraph Alerts["Real-time Alerts"]
+            A1[Critical Errors]
+            A2[Performance Degradation]
+            A3[System Availability]
+        end
+        
+        subgraph TrendAnalysis["Trend Analysis"]
+            TA1[Weekly Volume Trend]
+            TA2[Monthly Success Rate]
+            TA3[Top Error Types]
+        end
+    end
+    
+    classDef metrics fill:#e8f5e9,stroke:#2e7d32,stroke-width:1px
+    classDef performance fill:#e1f5fe,stroke:#0277bd,stroke-width:1px
+    classDef alerts fill:#ffebee,stroke:#c62828,stroke-width:1px
+    classDef trends fill:#fff8e1,stroke:#ff8f00,stroke-width:1px
+    
+    class VM1,VM2,VM3 metrics
+    class PM1,PM2,PM3 performance
+    class A1,A2,A3 alerts
+    class TA1,TA2,TA3 trends
+
+%% WHIMSICAL INSTRUCTIONS:
+%% Create a modern monitoring dashboard wireframe/mockup
+%% The dashboard should illustrate:
+%% 1. A main dashboard container with transparent background and visible border
+%% 2. Four distinct metric sections arranged in a grid layout with transparent backgrounds and visible borders:
+%%    - Volume Metrics (showing transaction volumes)
+%%    - Performance Metrics (showing response times and SLAs)
+%%    - Real-time Alerts (showing system errors and issues)
+%%    - Trend Analysis (showing longer-term patterns)
+%% 3. Each section should include placeholders for 3 different chart/data visualizations:
+%%    - Use chart icons or simplified chart representations (bar charts, line charts, etc.)
+%%    - Each chart should visually represent its purpose (e.g., volume chart shows increasing/decreasing bars)
+%% 4. Use a distinct color scheme for each section that matches the classDef colors in the mermaid code:
+%%    - Volume Metrics: green theme (#e8f5e9)
+%%    - Performance Metrics: blue theme (#e1f5fe)
+%%    - Alerts: red/pink theme (#ffebee)
+%%    - Trend Analysis: amber/yellow theme (#fff8e1)
+%% 5. Add appropriate icons for each section (graphs for metrics, bell for alerts, etc.)
+%% 6. Make the layout clean, modern and professional, suitable for a business application 
+%% 7. Focus on creating a realistic-looking dashboard that would be used for monitoring integrations 

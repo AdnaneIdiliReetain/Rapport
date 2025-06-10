@@ -1,0 +1,42 @@
+flowchart TB
+    subgraph External_Systems
+        Shopify[Shopify\nE-commerce]
+        CegidY2_HQ[Cegid Y2\nHQ]
+        CegidY2_JP[Cegid Y2\nJapan]
+    end
+    
+    subgraph Salesforce_Ecosystem
+        RCU[Référentiel Client Unifié\nSalesforce Service Cloud]
+        DataCloud[Salesforce\nData Cloud]
+        MCE[Marketing Cloud\nEngagement]
+    end
+    
+    Shopify -->|Webhooks| RCU
+    RCU -->|API Calls| Shopify
+    
+    CegidY2_HQ -->|Business Notifications| RCU
+    RCU -->|API Calls| CegidY2_HQ
+    
+    CegidY2_JP -->|Business Notifications| RCU
+    RCU -->|API Calls| CegidY2_JP
+    
+    RCU <-->|Data Sync| DataCloud
+    RCU <-->|Contact Sync| MCE
+    
+    DataCloud <-.->|Insights| MCE
+    
+    classDef primary fill:#f9f,stroke:#333,stroke-width:2px
+    class RCU primary
+
+%% WHIMSICAL INSTRUCTIONS:
+%% Create a system architecture diagram showing data flow between systems
+%% The diagram should illustrate:
+%% 1. Two main container boxes with transparent backgrounds and visible borders:
+%%    - External Systems (containing Shopify and two Cegid Y2 instances)
+%%    - Salesforce Ecosystem (containing RCU, Data Cloud, and Marketing Cloud)
+%% 2. Bidirectional arrows between systems showing data flow
+%% 3. Make RCU the central focal point with a highlighted appearance
+%% 4. Use different colors for External Systems vs Salesforce components
+%% 5. Include clear labels on connector lines showing integration method (API, Webhooks, etc.)
+%% 6. Use a professional color scheme suitable for a business presentation
+%% 7. Organize the diagram with External Systems on one side and Salesforce Ecosystem on the other 

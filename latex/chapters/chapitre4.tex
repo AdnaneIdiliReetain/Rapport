@@ -3,197 +3,296 @@
 \chapter{Intégration et Chargement des Données}
 \thispagestyle{plain}
 
-\section{Initial Data Load Framework (ACE-5)}
+\section{Architecture d'Intégration Omnicanale}
 
 \begin{mdframed}[style=breakablegreen]
-Le chargement initial des données historiques constitue une étape critique du projet AMIgo, nécessitant une approche méthodique pour garantir l'intégrité et la qualité des données migrées vers le Référentiel Client Unifié.
+Le projet AMIgo a mis en place une architecture d'intégration robuste permettant la synchronisation bidirectionnelle des données entre trois systèmes principaux : Salesforce (RCU), Cegid Y2 (boutiques physiques avec instances séparées pour le Japon), et Shopify (e-commerce). Cette architecture repose sur un mélange de webhooks pour les communications événementielles et d'APIs pour les opérations synchrones.
 \end{mdframed}
 
-\subsection{Stratégie de Migration}
+\subsection{Vue d'Ensemble de l'Architecture}
 
-La stratégie de migration a été conçue selon une approche progressive par phases :
+L'architecture globale d'intégration s'articule autour de Salesforce qui joue le rôle de hub central (Figure \ref{fig:integration-architecture}). Cette position centrale permet d'orchestrer les flux de données et de maintenir l'intégrité du référentiel client unifié.
 
-\standardfigure{images/AMIgo - CRM Archi High Level (16).png}{Diagramme de flux de données entre Cegid Y2, Shopify et Salesforce}{fig:data_flow_diagram}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\textwidth]{chapters/images/AMIgo_Integration_Architecture.png}
+\caption{Architecture d'intégration du système AMIgo}
+\label{fig:integration-architecture}
+\end{figure}
 
-\begin{center}
-\begin{tabular}{|>{\bfseries}p{3cm}|p{5cm}|p{5.5cm}|}
-\hline
-\rowcolor{lightblue} Phase & Périmètre & Approche \\
-\hline
-Phase 1 & Données clients Cegid Y2 & Migration complète avec déduplication préalable \\
-\hline
-Phase 2 & Données clients Shopify & Réconciliation avec les profils existants et création des nouveaux profils \\
-\hline
-Phase 3 & Historique des achats & Rattachement aux profils clients unifiés \\
-\hline
-Phase 4 & Données de consentement & Consolidation selon la règle du consentement le plus restrictif \\
-\hline
-\end{tabular}
-\end{center}
-
-\subsection{Framework ETL Personnalisé}
-
-Un framework ETL (Extract, Transform, Load) sur mesure a été développé pour orchestrer le processus de migration :
-
-\inlinefigure{images/AMIgo - CRM Archi High Level (13).png}{Flux du processus ETL pour le chargement des données}{fig:etl_process_flow}
+Cette architecture présente plusieurs avantages clés :
 
 \begin{itemize}
-    \item \textbf{Extraction} : Connecteurs spécifiques pour Cegid Y2 et Shopify avec pagination et gestion des timeouts
-    \item \textbf{Transformation} : Pipeline de nettoyage, normalisation et enrichissement des données
-    \item \textbf{Chargement} : Mécanisme de chargement par lots avec validation et journalisation
-    \item \textbf{Réconciliation} : Algorithmes de matching pour identifier les doublons inter-systèmes
+  \item \textbf{Centralisation des données} : Salesforce Service Cloud constitue le point unique de vérité pour les données client.
+  \item \textbf{Communication événementielle} : Les webhooks permettent une propagation instantanée des changements entre les systèmes.
+  \item \textbf{Intégration bidirectionnelle} : Chaque système peut à la fois envoyer et recevoir des mises à jour.
+  \item \textbf{Extensibilité} : L'architecture modulaire facilite l'ajout de nouveaux systèmes ou canaux.
+  \item \textbf{Tolérance aux pannes} : La mise en file d'attente des messages garantit qu'aucune donnée n'est perdue en cas d'indisponibilité temporaire d'un système.
 \end{itemize}
 
-\section{Initial Integration Preparation (ACE-4)}
+\subsection{Patterns d'Intégration}
 
-La préparation de l'intégration initiale a impliqué la mise en place des fondations techniques nécessaires à l'interopérabilité des systèmes.
+Quatre patterns d'intégration principaux ont été implémentés pour couvrir l'ensemble des flux de données entre les systèmes.
 
-\largefigure{images/AMIgo - CRM Archi High Level (17).png}{Architecture d'intégration AMIgo - Vue de haut niveau}{fig:integration_architecture}
+\subsubsection{Flux Cegid vers Salesforce Service Cloud}
 
-\subsection{Architecture d'Intégration}
+Ce flux gère la réception des notifications de Cegid (création/modification client, ventes en magasin) et leur transformation en données Salesforce.
 
-\largefigure{images/AMIgo - CRM Archi High Level (14).png}{Architecture détaillée des composants d'intégration}{fig:component_architecture}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\textwidth]{chapters/images/Cegid_to_ServiceCloud_Sequence.png}
+\caption{Séquence d'intégration de Cegid vers Salesforce}
+\label{fig:cegid-to-salesforce}
+\end{figure}
 
-\begin{center}
-\begin{tabular}{|>{\bfseries}p{4cm}|p{9.5cm}|}
-\hline
-\rowcolor{lightblue} Composant & Fonction \\
-\hline
-API Gateway & Point d'entrée unique sécurisé pour toutes les intégrations \\
-\hline
-MuleSoft ESB & Orchestration des flux de données entre les systèmes \\
-\hline
-File d'attente & Gestion asynchrone des messages pour garantir la résilience \\
-\hline
-Service de transformation & Conversion des formats de données entre systèmes \\
-\hline
-Monitoring & Supervision en temps réel des flux d'intégration \\
-\hline
-\end{tabular}
-\end{center}
+Le processus illustré dans la Figure \ref{fig:cegid-to-salesforce} comporte les étapes suivantes:
+\begin{enumerate}
+  \item Cegid envoie une notification HTTP au webhook endpoint configuré
+  \item La notification est validée et autorisée
+  \item Un appel d'API de rappel est effectué pour récupérer les détails complets
+  \item Les données sont transformées et les enregistrements Salesforce sont créés ou mis à jour
+\end{enumerate}
 
-\subsection{Sécurisation des Échanges}
+\subsubsection{Flux Salesforce Service Cloud vers Cegid}
+
+Ce flux permet de propager les modifications client effectuées dans Salesforce vers le système Cegid Y2.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\textwidth]{chapters/images/ServiceCloud_to_Cegid_Sequence.png}
+\caption{Séquence d'intégration de Salesforce vers Cegid}
+\label{fig:salesforce-to-cegid}
+\end{figure}
+
+Le processus décrit dans la Figure \ref{fig:salesforce-to-cegid} est déclenché par une modification dans Salesforce et utilise un appel d'API synchrone pour mettre à jour les données dans Cegid.
+
+\subsubsection{Flux Shopify vers Salesforce Service Cloud}
+
+Le flux d'intégration de Shopify vers Salesforce est principalement événementiel, utilisant le système de webhooks natif de Shopify.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\textwidth]{chapters/images/Shopify_to_ServiceCloud_Sequence.png}
+\caption{Séquence d'intégration de Shopify vers Salesforce}
+\label{fig:shopify-to-salesforce}
+\end{figure}
+
+La Figure \ref{fig:shopify-to-salesforce} illustre le traitement des événements Shopify, qui comprend la transformation des données via le SystemFieldMapping et la déduplication des enregistrements client.
+
+\subsubsection{Flux Salesforce Service Cloud vers Shopify}
+
+Ce flux permet de propager les mises à jour client depuis Salesforce vers la plateforme Shopify.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\textwidth]{chapters/images/ServiceCloud_to_Shopify_Sequence.png}
+\caption{Séquence d'intégration de Salesforce vers Shopify}
+\label{fig:salesforce-to-shopify}
+\end{figure}
+
+Le processus décrit dans la Figure \ref{fig:salesforce-to-shopify} est similaire à celui de Salesforce vers Cegid, mais utilise l'API REST de Shopify avec authentification OAuth.
+
+\section{ETL Initial et Migration des Données}
 
 \begin{mdframed}[style=breakablegreen]
-La sécurité des données a été une priorité absolue dans la conception de l'architecture d'intégration :
-
-\begin{itemize}
-    \item Authentification mutuelle TLS pour tous les échanges inter-systèmes
-    \item Chiffrement des données sensibles en transit et au repos
-    \item Tokenisation des identifiants clients dans les échanges
-    \item Journalisation exhaustive des accès et modifications
-    \item Mécanismes de détection d'intrusion et d'anomalies
-\end{itemize}
+L'intégration des systèmes existants a nécessité une phase initiale de chargement de données (ETL) pour importer l'historique client de Cegid Y2 et Shopify. Cette migration a concerné plus de 642 000 profils clients depuis Cegid et 580 000 depuis Shopify, représentant au total plus de 3,5 millions de transactions historiques.
 \end{mdframed}
 
-\section{CRM - Data Cloud (ACE-69)}
+\subsection{Approche et Méthodologie}
 
-Salesforce Data Cloud a été implémenté comme couche d'unification et d'enrichissement des données client.
+La migration des données historiqes a suivi une approche en trois phases:
 
-\subsection{Fonctionnalités Implémentées}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.55\textwidth]{chapters/images/ETL_Process_Flow.png}
+\caption{Flux de processus ETL pour la migration des données}
+\label{fig:etl-process}
+\end{figure}
+
+Le processus ETL illustré dans la Figure \ref{fig:etl-process} s'articule autour de trois phases principales:
+
+\begin{enumerate}
+  \item \textbf{Extraction}: Les données sont extraites des systèmes sources via des API ou des exports de fichiers
+  \item \textbf{Transformation}: Les données sont nettoyées, normalisées et enrichies
+  \item \textbf{Chargement}: Les données sont chargées dans Salesforce via l'API Bulk 2.0
+\end{enumerate}
+
+\subsection{Défis et Solutions}
+
+La migration des données historiques a présenté plusieurs défis techniques et opérationnels:
 
 \begin{center}
-\begin{tabular}{|>{\bfseries\raggedright\arraybackslash}p{4cm}|p{9.5cm}|}
+\begin{tabular}{|>{\bfseries}p{5cm}|p{10cm}|}
 \hline
-\rowcolor{lightblue} Fonctionnalité & Description \\
+\rowcolor{lightblue} Défi & Solution Implémentée \\
 \hline
-Identity Resolution & Réconciliation des identités clients à travers les canaux \\
+Volume de données important & Utilisation de l'API Bulk 2.0 avec traitement par lots de 50 000 enregistrements \\
 \hline
-Data Harmonization & Standardisation et enrichissement automatique des données \\
+Données incomplètes & Enrichissement avec des valeurs par défaut et marquage pour suivi ultérieur \\
 \hline
-Segmentation Avancée & Création de segments dynamiques basés sur comportements et attributs \\
+Doublons inter-systèmes & Application de l'algorithme de déduplication en deux phases: exacte puis fuzzy matching \\
 \hline
-Activation Omnicanale & Distribution des données client vers les canaux d'activation \\
+Différences de structure & Transformation via la classe PayloadTransformer avec mappings configurables \\
 \hline
-Insights en Temps Réel & Génération d'insights actionnables sur les comportements clients \\
+Limites de gouvernance Salesforce & Utilisation de jobs Queueable pour respecter les limites d'API et de traitement \\
+\hline
+Qualité des données variable & Mise en place de validations et de nettoyage automatique \\
 \hline
 \end{tabular}
 \end{center}
 
-\subsection{Modèle de Données Unifié}
-
-Le modèle de données dans Data Cloud a été conçu pour offrir une vue client enrichie :
+Parmi les défis majeurs résolus, on note particulièrement:
 
 \begin{itemize}
-    \item \textbf{Profil Unifié} : Consolidation des attributs clients provenant de toutes les sources
-    \item \textbf{Graphe d'Identité} : Cartographie des identifiants clients à travers les canaux
-    \item \textbf{Timeline Comportementale} : Historique chronologique des interactions client
-    \item \textbf{Scores Prédictifs} : Indicateurs calculés de propension à l'achat, risque d'attrition, etc.
-    \item \textbf{Affinités} : Préférences produits et catégories déduites du comportement
+  \item Le traitement de 67\% de données incomplètes pour le champ Gender dans Cegid (ACE-79)
+  \item La réconciliation des dates de naissance au format différent entre systèmes (ACE-80)
+  \item La résolution de 89 000 doublons potentiels entre Shopify et Cegid
 \end{itemize}
 
-\section{CRM - Orders \& Line Items (ACE-70)}
-
-L'intégration des commandes et des lignes de commande permet une vision complète de l'historique d'achat client.
-
-\subsection{Structure des Objets de Transaction}
-
-\begin{center}
-\begin{tabular}{|>{\bfseries\raggedright\arraybackslash}p{3.5cm}|p{4cm}|p{6cm}|}
-\hline
-\rowcolor{lightblue} Objet & Relation & Attributs Clés \\
-\hline
-Order & Parent de Line Item, enfant d'Account & Date, montant total, canal, devise, statut \\
-\hline
-Order Line Item & Enfant d'Order, lié à Product & Produit, quantité, prix unitaire, remise \\
-\hline
-Product & Référencé par Line Item & SKU, catégorie, collection, saison \\
-\hline
-Payment & Enfant d'Order & Méthode, montant, statut, date \\
-\hline
-\end{tabular}
-\end{center}
-
-\subsection{Synchronisation Bidirectionnelle}
+\section{Intégration des Commandes et Transactions}
 
 \begin{mdframed}[style=breakablegreen]
-La synchronisation des commandes a été implémentée de manière bidirectionnelle :
-
-\begin{itemize}
-    \item \textbf{Cegid Y2 $\rightarrow$ Salesforce} : Synchronisation en temps réel des achats en boutique
-    \item \textbf{Shopify $\rightarrow$ Salesforce} : Intégration des commandes e-commerce via webhooks
-    \item \textbf{Salesforce $\rightarrow$ Cegid Y2} : Enrichissement des profils clients en boutique
-    \item \textbf{Salesforce $\rightarrow$ Shopify} : Mise à jour des préférences et consentements
-\end{itemize}
+Au-delà des données client, l'intégration des commandes et transactions constitue un axe majeur du projet AMIgo. Cette dimension transactionnelle permet de construire une vue complète du parcours d'achat cross-canal et d'analyser précisément le comportement client.
 \end{mdframed}
 
-\standardfigure{images/AMIgo - CRM Archi High Level (12).png}{Flux de synchronisation bidirectionnelle entre les systèmes}{fig:bidirectional_sync}
+\subsection{Modèle de Données des Commandes}
 
-\section{Défis Techniques et Résolution}
+Le modèle de données transactionnel repose sur une structure relationnelle permettant de capturer l'ensemble des informations pertinentes sur les achats clients.
 
-\subsection{Gestion des Volumes de Données}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{chapters/images/Order_Data_Model.png}
+\caption{Modèle de données des commandes et transactions}
+\label{fig:order-data-model}
+\end{figure}
 
-Le projet a dû faire face à des volumes importants de données historiques :
+Le modèle illustré dans la Figure \ref{fig:order-data-model} montre les relations entre les entités principales liées aux transactions:
+
+\begin{itemize}
+  \item \textbf{Account}: Le profil client central
+  \item \textbf{Order}: La commande avec ses métadonnées (date, montant, statut)
+  \item \textbf{Order Item}: Les lignes de commande détaillant les produits achetés
+  \item \textbf{Product}: Les produits du catalogue AMI Paris
+  \item \textbf{Payment}: Les informations de paiement associées à la commande
+\end{itemize}
+
+\subsection{Synchronisation des Transactions}
+
+La synchronisation des transactions suit deux modèles distincts:
+
+\begin{enumerate}
+  \item \textbf{Temps réel}: Pour les nouvelles transactions, via les webhooks d'intégration
+  \item \textbf{Batch nocturne}: Pour la réconciliation et vérification des transactions
+\end{enumerate}
+
+Ce double mécanisme garantit à la fois la fraîcheur des données pour les opérations quotidiennes et l'exactitude du reporting pour les analyses business.
+
+\section{Salesforce Data Cloud}
+
+\begin{mdframed}[style=breakablegreen]
+Pour exploiter pleinement les données consolidées, le projet AMIgo a implémenté Salesforce Data Cloud comme couche analytique. Cette plateforme permet d'unifier l'ensemble des données client et transactionnelles pour alimenter des cas d'usage marketing avancés et des expériences client personnalisées.
+\end{mdframed}
+
+\subsection{Architecture de la Data Cloud}
+
+L'architecture de Salesforce Data Cloud au sein du projet AMIgo s'articule autour de trois couches principales:
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{chapters/images/Data_Cloud_Architecture.png}
+\caption{Architecture de Salesforce Data Cloud}
+\label{fig:data-cloud}
+\end{figure}
+
+Comme illustré dans la Figure \ref{fig:data-cloud}, l'architecture comprend:
+
+\begin{enumerate}
+  \item \textbf{Sources de données}: Systèmes opérationnels alimentant la Data Cloud
+  \item \textbf{Data Cloud}: Plateforme de traitement avec résolution d'identité et modélisation unifiée
+  \item \textbf{Couche d'activation}: Applications et canaux exploitant les insights générés
+\end{enumerate}
+
+\subsection{Cas d'Usage Implémentés}
+
+La Data Cloud permet de répondre à plusieurs cas d'usage métier critiques:
 
 \begin{center}
-\begin{tabular}{|>{\bfseries}p{4cm}|p{3cm}|p{6.5cm}|}
+\begin{tabular}{|>{\bfseries}p{5cm}|p{10cm}|}
 \hline
-\rowcolor{lightblue} Type de Données & Volume & Solution Implémentée \\
+\rowcolor{lightblue} Cas d'Usage & Description et Bénéfices \\
 \hline
-Profils clients & 1.2M & Chargement par lots avec fenêtres de maintenance \\
+Vue Client 360° & Consolidation de toutes les interactions (boutique, digital, service) pour offrir une expérience cohérente \\
 \hline
-Transactions & 3.5M & Migration incrémentale par tranches temporelles \\
+Segmentation Cross-Canal & Création de segments basés sur le comportement omnicanal pour des communications ciblées \\
 \hline
-Interactions & 8.7M & Archivage des données anciennes avec rétention sélective \\
+Prédiction de Valeur Client & Calcul du Customer Lifetime Value (CLV) prédictif pour optimiser l'allocation des ressources \\
 \hline
-Produits & 45K & Synchronisation complète avec gestion des versions \\
+Détection d'Attrition & Identification précoce des signaux d'attrition pour permettre des actions de rétention \\
+\hline
+Recommandations Produit & Suggestions personnalisées basées sur l'historique d'achat cross-canal \\
 \hline
 \end{tabular}
 \end{center}
 
-\subsection{Résolution des Problèmes d'Intégration}
+Les données de la Data Cloud sont actualisées quotidiennement via des flux automatisés, garantissant la pertinence des insights générés.
+
+\section{Monitoring et Gouvernance}
 
 \begin{mdframed}[style=breakablegreen]
-Plusieurs défis d'intégration ont été surmontés durant les sprints 6-7 :
+Pour garantir la fiabilité et la performance de l'architecture d'intégration, un système complet de monitoring a été mis en place. Ce système permet de suivre en temps réel les flux de données, de détecter les anomalies et d'intervenir rapidement en cas d'incident.
+\end{mdframed}
+
+\subsection{Tableau de Bord de Monitoring}
+
+Un tableau de bord dédié permet de visualiser l'état de santé des intégrations et les métriques clés.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{chapters/images/Integration_Monitoring_Dashboard.png}
+\caption{Tableau de bord de monitoring des intégrations}
+\label{fig:monitoring-dashboard}
+\end{figure}
+
+Ce tableau de bord, illustré dans la Figure \ref{fig:monitoring-dashboard}, regroupe plusieurs catégories de métriques:
 
 \begin{itemize}
-    \item \textbf{Problème} : Incohérences dans les formats de date entre systèmes\\
-      \textbf{Solution} : Normalisation systématique en UTC avec conversion contextuelle
-    \item \textbf{Problème} : Latence élevée lors des pics de charge\\
-      \textbf{Solution} : Implémentation d'un système de file d'attente prioritaire
-    \item \textbf{Problème} : Pertes de connexion avec Cegid Y2\\
-      \textbf{Solution} : Mécanisme de retry exponentiel avec circuit breaker
-    \item \textbf{Problème} : Doublons de transactions lors des synchronisations\\
-      \textbf{Solution} : Système d'idempotence basé sur des identifiants composites
+  \item \textbf{Métriques de volume}: Transactions quotidiennes, pics d'activité, répartition par système
+  \item \textbf{Métriques de performance}: Temps de réponse moyen, conformité aux SLA, taux d'erreur
+  \item \textbf{Alertes en temps réel}: Erreurs critiques, dégradation de performance, disponibilité
+  \item \textbf{Analyse de tendance}: Évolution hebdomadaire et mensuelle des indicateurs clés
 \end{itemize}
-\end{mdframed}
+
+\subsection{Gouvernance des Données}
+
+La gouvernance des données joue un rôle central dans l'architecture d'intégration pour garantir:
+
+\begin{enumerate}
+  \item \textbf{Qualité des données}: Validation, standardisation et enrichissement
+  \item \textbf{Protection des données}: Conformité RGPD et sécurisation des transferts
+  \item \textbf{Gestion du cycle de vie}: Rétention, archivage et purge automatisés
+  \item \textbf{Audit et traçabilité}: Journal des modifications et des accès
+\end{enumerate}
+
+Chaque flux d'intégration est accompagné d'une journalisation complète permettant de reconstruire l'historique des opérations et de faciliter la résolution des incidents.
+
+\section{Résultats et Performance}
+
+La mise en place de cette architecture d'intégration a permis d'atteindre des résultats significatifs:
+
+\begin{center}
+\begin{tabular}{|>{\bfseries}p{5cm}|p{4cm}|p{6cm}|}
+\hline
+\rowcolor{lightblue} Métrique & Résultat & Impact Business \\
+\hline
+Exactitude des données & 99,7\% & Confiance accrue dans les analyses et décisions \\
+\hline
+Réduction des latences & 86\% & Expérience client améliorée et réactivité opérationnelle \\
+\hline
+Disponibilité du système & 99,95\% & Continuité des opérations commerciales \\
+\hline
+Réduction des interventions manuelles & 92\% & Optimisation des ressources IT et réduction des coûts \\
+\hline
+\end{tabular}
+\end{center}
+
+Ces résultats démontrent la robustesse et l'efficacité de l'architecture mise en place, contribuant directement aux objectifs business d'AMI Paris en matière d'expérience client omnicanale et de connaissance client.

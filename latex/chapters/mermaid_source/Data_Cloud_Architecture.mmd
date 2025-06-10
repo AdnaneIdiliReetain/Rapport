@@ -1,0 +1,45 @@
+flowchart LR
+    %% Data Sources
+    CRM["Salesforce CRM"] --> DataLake
+    Shopify["Shopify E-commerce"] --> DataLake
+    CegidY2["Cegid Y2 Retail"] --> DataLake
+    Marketing["Marketing Cloud"] --> DataLake
+    Web["Web Interactions"] --> DataLake
+    
+    %% Data Cloud Components
+    DataLake["Data Lake"] --> IDResolution
+    IDResolution["Identity Resolution"] --> DataModel
+    DataModel["Unified Data Model"] --> Segments & Metrics
+    
+    %% Activation Targets
+    Segments["Segmentation Engine"] --> MCJourneys & ClientelingApp & PersonalizationEngine
+    Metrics["Calculated Metrics"] --> MCJourneys & ClientelingApp & PersonalizationEngine
+    
+    %% Activation Components
+    MCJourneys["Marketing Journeys"]
+    ClientelingApp["Clienteling App"]
+    PersonalizationEngine["Personalization Engine"]
+    
+    %% Styling
+    classDef sources fill:#e3f2fd,stroke:#1565c0,stroke-width:1px
+    classDef datacloud fill:#f3e5f5,stroke:#7b1fa2,stroke-width:1px
+    classDef activation fill:#f9fbe7,stroke:#827717,stroke-width:1px
+    
+    class CRM,Shopify,CegidY2,Marketing,Web sources
+    class DataLake,IDResolution,DataModel,Segments,Metrics datacloud
+    class MCJourneys,ClientelingApp,PersonalizationEngine activation
+
+%% WHIMSICAL INSTRUCTIONS:
+%% Create a data flow diagram showing the Salesforce Data Cloud architecture
+%% The diagram should illustrate:
+%% 1. Three main vertical sections with transparent backgrounds and visible borders:
+%%    - Data Sources (left) - show various input systems feeding data
+%%    - Data Cloud Processing (middle) - show data transformation stages
+%%    - Activation Layer (right) - show output/usage of processed data
+%% 2. Arrows showing clear data flow direction from sources through processing to activation
+%% 3. Use different colors for each section (sources, data cloud, activation)
+%% 4. Organize in a left-to-right flow that shows the progressive transformation of data
+%% 5. Include all components shown in the mermaid code with their relationships
+%% 6. Make the Data Model component visually central as it connects processing to activation
+%% 7. Use icons where appropriate (database for Data Lake, user icons for Clienteling, etc.)
+%% 8. Maintain a clean, professional appearance suitable for a business presentation 

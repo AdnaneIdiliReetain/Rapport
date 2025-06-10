@@ -1,0 +1,67 @@
+erDiagram
+    %% Force horizontal layout
+    ACCOUNT ||--o{ ORDER : places
+    PRODUCT }o--|| ORDER_ITEM : used_in
+    ORDER ||--o{ ORDER_ITEM : contains
+    ORDER ||--o{ PAYMENT : has
+    
+    ACCOUNT {
+        string Id
+        string FirstName
+        string LastName
+        string Email
+        string CustomerTier
+    }
+    
+    ORDER {
+        string Id
+        string OrderNumber
+        date OrderDate
+        decimal TotalAmount
+        string Status
+        string Channel
+    }
+    
+    PAYMENT {
+        string Id
+        string OrderId
+        string Method
+        decimal Amount
+        string Status
+    }
+    
+    ORDER_ITEM {
+        string Id
+        string OrderId
+        string ProductId
+        int Quantity
+        decimal UnitPrice
+        decimal TotalPrice
+    }
+    
+    PRODUCT {
+        string Id
+        string SKU
+        string Name
+        string Category
+        string Collection
+    }
+
+%% WHIMSICAL INSTRUCTIONS:
+%% Create a HORIZONTAL Entity-Relationship Diagram (ERD) for the Order Data Model
+%% The diagram MUST be wider than it is tall with the following arrangement:
+%% 1. Position entities in a clear horizontal pattern:
+%%    - ACCOUNT on left side
+%%    - ORDER in center
+%%    - PAYMENT on right side
+%%    - PRODUCT below ACCOUNT (left side)
+%%    - ORDER_ITEM below ORDER (center-right)
+%% 2. Draw relationship lines to flow horizontally where possible
+%% 3. IMPORTANT: The overall diagram should be LANDSCAPE orientation, roughly twice as wide as it is tall
+%% 4. Show only the most important fields for each entity (as listed in the mermaid code)
+%% 5. Use a small table-like structure for each entity
+%% 6. Use complementary colors to differentiate entity types
+%% 7. Make entity names prominent but keep the overall size compact
+%% 8. Use proper cardinality notation for relationships
+%% 9. Optimize the layout to prioritize horizontal spacing over vertical spacing
+

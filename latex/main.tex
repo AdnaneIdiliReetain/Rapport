@@ -95,6 +95,17 @@
     headheight=14.62pt
 }
 
+% Add border decoration system
+\usepackage{eso-pic}
+\usepackage{etoolbox}
+\input{page_decorations}
+
+% ------ BORDER CONTROL ------
+% Choose border style: none, corner, full, side  
+% Example: \setBorderStyle{full}
+% To change border style at any point: \setBorderStyle{none}
+% -------------------------
+
 % Define colors
 \definecolor{coverblue}{RGB}{0, 51, 153} % Dark blue for titles (AMI blue)
 \definecolor{lightgray}{RGB}{240, 240, 240}
@@ -216,13 +227,17 @@
     \setlength{\TPVertModule}{1cm}
     
     % Position the logos with textpos
-    \begin{textblock}{5}(1.5,1)  % width of 5cm, positioned at (2,1)
-        \includegraphics[height=4cm]{../images/logos/logo_school.png}
-    \end{textblock}
-    
-    \begin{textblock}{5}(14.5,3.2)  % width of 5cm, positioned at (14,2.1) - adjusted to align bottom
-        \includegraphics[height=1.8cm]{../images/logos/logo_reetain.png}
-    \end{textblock}
+    \begin{tikzpicture}[remember picture, overlay, shift={(current page.north west)}]
+        % School logo at left - positioned from top left
+        \node[anchor=north west, inner sep=0pt] at ([shift={(1.5cm, -2.6cm)}]current page.north west) {
+            \includegraphics[height=2.5cm]{../images/logos/logo_school.png}
+        };
+        
+        % Reetain logo at right - aligned to have same bottom position
+        \node[anchor=south east, inner sep=0pt] at ([shift={(-1.5cm, -5.1cm)}]current page.north east) {
+            \includegraphics[height=1.8cm]{../images/logos/logo_reetain.png}
+        };
+    \end{tikzpicture}
     
     % Add vertical space for the rest of the content
     \vspace{3.5cm}
@@ -243,7 +258,7 @@
             \node[draw=coverblue, thick, fill=white, inner sep=10pt, drop shadow] {
                 \begin{minipage}{0.8\textwidth}
                     \begin{center}
-                        {\Large\textbf{AMIgo Client Engagement}}\\[0.3cm]
+                        %{\Large\textbf{AMIgo Client Engagement}}\\[0.3cm]
                         {\normalsize Conception et Implémentation d'un Référentiel Client Unifié (RCU) pour AMI Paris : Intégration Omnicanale et Harmonisation des Données dans un Contexte Retail Luxe}
                     \end{center}
                 \end{minipage}
@@ -265,12 +280,15 @@
     \end{center}
     \vspace{1cm}
     
-    % Jury section - Ayoub style
+    % Jury section - With aligned columns
     \begin{center}
         \textbf{\textcolor{coverblue}{Soutenu devant le jury :}}\\[0.5cm]
-        Pr. NOM Prénom, Professeur à l'ENSA\\[0.3cm]
-        Pr. NOM Prénom, Professeur à l'ENSA\\[0.3cm]
-        M. NOM Prénom, Reetain\\[0.3cm]
+        \begin{tabular}{r@{\hspace{0.5cm}:\hspace{0.5cm}}l}
+        Encadrant & A. Atlas \\[0.3cm]
+        Président & A. Massaq \\[0.3cm]
+        Examinateur & M. Oumoun \\[0.3cm]
+        Encadrant Reetain & G. Anas \\[0.3cm]
+        \end{tabular}
     \end{center}
     \vspace{0.8cm}
     
@@ -327,29 +345,31 @@ Enfin, nos remerciements s'adressent à l'équipe pédagogique de l'ENSA de Marr
 \chapter*{Résumé Exécutif}
 \addcontentsline{toc}{chapter}{Résumé Exécutif}
 
-\begin{spacing}{1.15}
-\normalsize
+\begin{spacing}{1.1}
+\small
 
-Ce rapport présente le projet AMIgo, une initiative stratégique d'unification des données client pour AMI Paris, marque de mode parisienne en pleine expansion internationale. Dans un secteur du luxe où l'expérience client personnalisée est devenue un différenciateur essentiel, AMI Paris faisait face à une fragmentation critique de ses données clients entre son système de gestion de boutiques physiques (Cegid Y2) et sa plateforme e-commerce (Shopify).
+Ce rapport présente le projet AMIgo, une initiative stratégique d'unification des données client pour AMI Paris, marque de mode parisienne en pleine expansion internationale. Dans un secteur du luxe où l'expérience client personnalisée est devenue un différenciateur essentiel, AMI Paris faisait face à une fragmentation critique de ses données clients entre Cegid Y2 (boutiques) et Shopify (e-commerce).
 
-Le cœur du projet consiste en la conception et l'implémentation d'un Référentiel Client Unifié (RCU) sur Salesforce qui sert désormais de source unique de vérité pour toutes les interactions client. Cette architecture d'intégration permet non seulement la réconciliation des identités clients cross-canal, mais aussi la synchronisation bidirectionnelle en temps réel des données entre les systèmes.
+Le projet consiste en la conception et l'implémentation d'un Référentiel Client Unifié (RCU) sur Salesforce comme source unique de vérité. Cette architecture permet la réconciliation des identités clients cross-canal et la synchronisation bidirectionnelle en temps réel entre systèmes.
 
-Notre approche technique s'est articulée autour de trois axes majeurs :
+Notre approche technique s'articule autour de trois axes majeurs :
 
-\begin{enumerate}
-    \item \textbf{Harmonisation du modèle de données} — Création d'une structure unifiée avec des règles métier pour la priorisation des sources et la validation des données
-    \item \textbf{Système d'intégration robuste} — Développement d'une architecture de webhooks et de transformation de payloads configurable via métadonnées plutôt que par code
-    \item \textbf{Mécanismes avancés de gouvernance} — Mise en place de processus de déduplication avec scoring de similarité et traçabilité complète des fusions
+\begin{enumerate}[itemsep=-2pt,topsep=0pt,parsep=0pt]
+    \item \textbf{Harmonisation du modèle de données} — Structure unifiée avec règles de priorisation et validation
+    \item \textbf{Système d'intégration robuste} — Architecture webhooks et transformation configurable via métadonnées
+    \item \textbf{Mécanismes de gouvernance} — Déduplication avec scoring de similarité et traçabilité des fusions
 \end{enumerate}
 
-Le projet a livré des résultats tangibles, notamment :
-\begin{itemize}\itemsep0em
-  \item Une réduction de 84\% du temps consacré à la gestion manuelle des doublons
-  \item Une augmentation de 22\% de la valeur client moyenne calculée grâce à la consolidation des historiques d'achat
-  \item Une amélioration de 26\% du taux de contacts email réussis
-  \item Une hausse de 28\% du taux d'identification des clients en boutique
+\vspace{-0.5em}
+Le projet a livré des résultats tangibles:
+\begin{itemize}[itemsep=-2pt,topsep=2pt,parsep=0pt,leftmargin=*]
+  \item Réduction de 84\% du temps consacré à la gestion manuelle des doublons
+  \item Augmentation de 22\% de la valeur client moyenne grâce à la consolidation des historiques
+  \item Amélioration de 26\% du taux de contacts email réussis
+  \item Hausse de 28\% du taux d'identification des clients en boutique
 \end{itemize}
 
+\vspace{-0.5em}
 Au-delà des métriques quantitatives, le RCU a transformé la vision stratégique d'AMI Paris en fournissant une base solide pour l'expansion de ses capacités d'analyse et d'engagement client, tout en assurant sa conformité aux exigences du RGPD.
 
 \end{spacing}
@@ -395,10 +415,6 @@ Beyond quantitative metrics, the UCR has transformed AMI Paris's strategic visio
 % Table of contents
 \cleardoublepage
 \thispagestyle{plain}
-\begin{center}
-\Large\bfseries\textcolor{blue}{Table des matières}
-\end{center}
-\vspace{1cm}
 \tableofcontents
 \cleardoublepage
 
@@ -432,6 +448,10 @@ Beyond quantitative metrics, the UCR has transformed AMI Paris's strategic visio
     \textbf{APEX} & Langage de programmation propriétaire de Salesforce \\
     \textbf{SOQL} & Salesforce Object Query Language \\
     \textbf{LWC} & Lightning Web Components \\
+    \textbf{CLV} & Customer Lifetime Value \\
+    \textbf{SLA} & Service Level Agreement \\
+    \textbf{REST} & Representational State Transfer \\
+    \textbf{OAuth} & Protocole d'autorisation ouvert \\
 \end{tabular}
 
 \section*{Glossaire}
@@ -455,6 +475,22 @@ Beyond quantitative metrics, the UCR has transformed AMI Paris's strategic visio
     \item[\textbf{Intégration bidirectionnelle}] Système permettant la synchronisation des données dans les deux sens entre les applications connectées.
     
     \item[\textbf{Omnicanal}] Stratégie commerciale intégrant tous les canaux de communication et points de vente pour offrir une expérience client fluide et cohérente.
+    
+    \item[\textbf{Architecture d'intégration}] Structure technique permettant l'échange de données entre différents systèmes selon des patterns définis et des règles métier spécifiques.
+    
+    \item[\textbf{API Bulk}] Interface de programmation optimisée pour le traitement de volumes importants de données, permettant des opérations en lots pour améliorer les performances.
+    
+    \item[\textbf{Data Cloud}] Plateforme analytique de Salesforce permettant d'unifier et d'exploiter les données client pour des cas d'usage marketing avancés.
+    
+    \item[\textbf{Customer Lifetime Value}] Valeur totale estimée qu'un client générera pour une entreprise tout au long de sa relation commerciale.
+    
+    \item[\textbf{PayloadTransformer}] Composant logiciel qui convertit les structures de données entre différents systèmes selon des mappings configurables.
+    
+    \item[\textbf{Jobs Queueable}] Mécanisme dans Salesforce permettant d'exécuter des traitements asynchrones en les plaçant dans une file d'attente pour optimiser les performances et respecter les limites de gouvernance.
+    
+    \item[\textbf{Batch nocturne}] Processus automatisé exécuté pendant les heures creuses pour effectuer des opérations volumineuses sans impacter les performances du système pendant les heures d'activité.
+    
+    \item[\textbf{Fuzzy matching}] Technique permettant d'identifier des correspondances approximatives entre des enregistrements malgré des variations mineures ou des erreurs dans les données.
 \end{description}
 
 \clearpage
@@ -499,11 +535,11 @@ Ce rapport est organisé selon la structure suivante :
 %\cleardoublepage
 %\input{chapters/chapitre2.tex}
 
-\cleardoublepage
-\input{chapters/chapitre3.tex}
-
 %\cleardoublepage
-%\input{chapters/chapitre4.tex}
+%\input{chapters/chapitre3.tex}
+
+\cleardoublepage
+\input{chapters/chapitre4.tex}
 
 %\cleardoublepage
 %\input{chapters/chapitre5.tex}
