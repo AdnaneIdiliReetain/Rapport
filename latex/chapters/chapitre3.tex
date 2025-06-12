@@ -22,20 +22,18 @@ Le Référentiel Client Unifié (RCU) constitue l'élément central du projet AM
 
 \subsection{Architecture du Modèle de Données}
 
-Le RCU s'articule autour de cinq objets Salesforce interconnectés, formant l'épine dorsale de l'écosystème:
+Le RCU s'articule autour de quatre objets Salesforce interconnectés, formant l'épine dorsale de l'écosystème:
 
 \begin{center}
 \begin{tabular}{|>{\bfseries}p{4cm}|p{9.5cm}|}
 \hline
 \rowcolor{lightblue} Objet & Description \\
 \hline
-Account & Entité centrale stockant les informations d'identification du client, ses préférences et son historique d'interaction \\
+Account & Entité centrale stockant les informations d'identification du client, ses préférences (y compris les consentements email/SMS), et son historique d'interaction \\
 \hline
 Store\_\_c & Représentation des boutiques physiques avec leurs caractéristiques, zones géographiques et métriques de performance \\
 \hline
 SalesAssociate\_\_c & Profils des conseillers de vente avec leurs portefeuilles clients, spécialisations et historiques de vente \\
-\hline
-Consent\_\_c & Gestion granulaire des consentements RGPD par canal de communication avec historisation complète \\
 \hline
 Order/OrderItem & Historique des transactions cross-canal avec détails des produits achetés, remises et taxes \\
 \hline
@@ -106,6 +104,8 @@ lines[].quantities.quantity & OrderStatus & Order & CegidStatusLogic \\
 \hline
 individual.firstName,individual.lastName & FullName & Account & Concatenate \\
 \hline
+address.country & BillingCountry & Account & Transcode (\{"US":"United States", "CA":"Canada"\}) \\
+\hline
 \end{tabular}
 \end{table}
 
@@ -117,6 +117,7 @@ individual.firstName,individual.lastName & FullName & Account & Concatenate \\
   \item \textbf{DateIso} : Extraction de la partie date d'une chaîne au format ISO et conversion en objet Date Salesforce.
   \item \textbf{CegidStatusLogic} : Logique conditionnelle complexe qui détermine le statut de la commande en fonction des quantités (positives="paid", négatives="returned", mixtes="partially refunded").
   \item \textbf{Concatenate} : Fusion de plusieurs valeurs sources avec un séparateur pour créer une valeur composite dans le champ cible.
+  \item \textbf{Transcode} : Conversion de valeurs entre systèmes via un mappage défini (ex: \{"US":"United States"\} pour convertir les codes pays).
 \end{itemize}
 
 Ces transformations permettent d'adapter les données brutes reçues des systèmes externes au modèle de données Salesforce tout en appliquant les règles métier nécessaires.
@@ -281,53 +282,37 @@ La synchronisation des boutiques entre Cegid Y2 et Salesforce est gérée par la
 
 La figure~\ref{fig:queueable} illustre le fonctionnement de la classe CegidStoreInitQueueable, qui permet de synchroniser les boutiques Cegid Y2 dans Salesforce par traitement asynchrone par lots. Ce mécanisme optimise les performances et garantit la résilience du système face aux limitations de la plateforme Salesforce.
 
-\section{CRM RCU - GDPR Process (ACE-13)}
-
-% [DIAGRAM-4: "Flux de Traitement RGPD"
-% Ce diagramme doit illustrer:
-% - Le cycle de vie des données personnelles:
-%   1. Collecte (points d'entrée: Cegid, Shopify, formulaires)
-%   2. Stockage (Account et Consent__c)
-%   3. Utilisation (paramètres de consentement)
-%   4. Effacement/Anonymisation (InactiveProspectsAnonymizationBatch)
-% - Les mécanismes d'opt-in/opt-out:
-%   - Canaux: Email, SMS, Téléphone
-%   - Enregistrement des timestamps de consentement
-% - Le processus d'anonymisation automatique:
-%   - Déclencheurs: inactivité (18 mois), demande explicite
-%   - Champs conservés vs champs anonymisés
-% - La propagation des préférences vers les systèmes externes
-% ]
+\section{Gestion du consentement RGPD}
 
 \begin{mdframed}[style=breakablegreen]
-La conformité au RGPD est assurée via un système dédié de gestion des consentements, intégré nativement au RCU. Ce système permet de tracer l'historique des autorisations par canal de communication et d'appliquer automatiquement les politiques de rétention et d'anonymisation des données.
+La conformité au RGPD est assurée via un système intégré de gestion des préférences client directement au sein de l'objet Account. Cette approche séparé permet une gestion simplifiée et performante des autorisations marketing par canal de communication, et assure l'application automatique des politiques de rétention et d'anonymisation des données.
 \end{mdframed}
 
-\subsection{Modèle de Consentement}
+\subsection{Modèle de Gestion des Préférences}
 
-Le modèle de consentement implémenté permet une gestion granulaire des préférences clients:
+Le modèle de préférences client implémenté dans l'objet Account permet une gestion granulaire des consentements:
 
 \begin{center}
-\begin{tabular}{|>{\bfseries}p{4cm}|p{10cm}|}
+\begin{tabular}{|>{\bfseries}p{4.5cm}|p{10cm}|}
 \hline
-\rowcolor{lightblue} Type de Consentement & Description \\
+\rowcolor{lightblue} Type de Préférence & Description \\
 \hline
-OptOutEmail\_\_c & Désinscription des communications marketing par email \\
+EmailOptin\_\_c & Statut d'abonnement aux communications marketing par email \\
 \hline
-OptOutSMS\_\_c & Désinscription des communications marketing par SMS \\
+EmailOptinDate\_\_c & Date d'abonnement aux communications email \\
 \hline
-OptOutPhone\_\_c & Désinscription des appels téléphoniques commerciaux \\
+EmailOptoutDate\_\_c & Date de désabonnement des communications email \\
 \hline
-OptOutMail\_\_c & Désinscription des envois postaux \\
+MobileOptin\_\_c & Statut d'abonnement aux communications marketing par SMS \\
 \hline
-OptOutAll\_\_c & Désinscription de toutes les communications marketing \\
+PhoneOptin\_\_c & Statut d'abonnement aux appels téléphoniques commerciaux \\
 \hline
-DataProcessing\_\_c & Consentement pour l'analyse des données et la personnalisation \\
+PostalOptin\_\_c & Statut d'abonnement aux envois postaux \\
 \hline
 \end{tabular}
 \end{center}
 
-Ces préférences sont centralisées dans l'objet Account et synchronisées bidirectionnellement avec les systèmes sources pour garantir une cohérence omnicanale du respect des consentements.
+Ces préférences sont intégrées directement dans l'objet Account et synchronisées bidirectionnellement avec les systèmes sources pour garantir une cohérence omnicanale du respect des consentements.
 
 \subsection{Processus d'Anonymisation}
 
@@ -346,7 +331,7 @@ Ce processus d'anonymisation met en œuvre la politique de rétention des donné
 
 \begin{itemize}
     \item Identification automatique des prospects inactifs depuis plus de 3 ans
-    \item Différenciation entre prospects avec consentements expirés et prospects sans activité
+    \item Différenciation entre prospects avec préférences expirées et prospects sans activité
     \item Marquage progressif des données à anonymiser avant le traitement définitif
     \item Approche par lot permettant de traiter efficacement de grands volumes de données
 \end{itemize}
@@ -354,7 +339,7 @@ Ce processus d'anonymisation met en œuvre la politique de rétention des donné
 \section{CRM RCU - Data Merge Process (ACE-44)}
 
 \begin{mdframed}[style=breakablegreen]
-Le processus de fusion des données est un composant essentiel du RCU, permettant d'établir une représentation unifiée et fiable de chaque client, indépendamment du canal d'acquisition ou des différences d'information entre les systèmes sources. Cette fusion s'effectue selon des règles métier précises et une hiérarchie claire des sources de données.
+Le processus de fusion des données est un composant essentiel du RCU, permettant d'établir une représentation unifiée et fiable de chaque client, indépendamment du canal d'acquisition. Cette fusion s'effectue principalement via la réconciliation des adresses email, qui a été identifiée comme la méthode la plus fiable pour l'identification cross-canal des clients.
 \end{mdframed}
 
 \subsection{Stratégie de Fusion des Données Client}
@@ -362,25 +347,25 @@ Le processus de fusion des données est un composant essentiel du RCU, permettan
 Le processus de fusion implémenté dans le système repose sur plusieurs principes fondamentaux :
 
 \begin{enumerate}
+    \item \textbf{Réconciliation par email} : La décision finale d'implémentation utilise exclusivement l'adresse email comme méthode de réconciliation entre les différents systèmes, une approche plus simple et plus fiable que les méthodes complexes initialement envisagées.
+    
     \item \textbf{Hiérarchie des sources} : Une priorité claire est établie entre les systèmes sources, avec Cegid Y2 comme source primaire pour les clients issus des boutiques physiques et Shopify comme source primaire pour les clients en ligne.
     
     \item \textbf{Préservation des données} : Lors de la fusion, les champs non vides de l'enregistrement maître sont conservés prioritairement sur les données de l'enregistrement fusionné.
     
-    \item \textbf{Conservation de l'historique} : Les interactions, consentements et transactions des deux enregistrements sont préservés et consolidés dans l'enregistrement maître.
-    
-    \item \textbf{Règles spécifiques par champ} : Certains champs suivent des règles particulières lors de la fusion, notamment pour les préférences client et les dates d'interaction.
+    \item \textbf{Conservation de l'historique} : Les interactions et transactions des deux enregistrements sont préservés et consolidés dans l'enregistrement maître.
 \end{enumerate}
 
-Le diagramme ci-dessous illustre le processus global de fusion des comptes clients dans le RCU :
+Le diagramme ci-dessous illustre le processus global de fusion des comptes clients dans le RCU, basé sur la réconciliation par email :
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.35\textwidth]{chapters/images/account_merge_process.png}
-\caption{Processus de fusion des comptes clients dans le RCU}
+\caption{Processus de fusion des comptes clients par réconciliation email}
 \label{fig:account-merge-process}
 \end{figure}
 
-\noindent Le processus commence par l'identification des doublons potentiels basée principalement sur l'adresse email. Un score de correspondance est calculé en fonction de plusieurs attributs (nom, prénom, téléphone). Si le score dépasse 85\%, la fusion est automatique. Entre 70\% et 85\%, une validation manuelle est requise. En-dessous de 70\%, aucune action de fusion n'est entreprise.
+\noindent Le processus commence par l'identification des doublons potentiels basée exclusivement sur l'adresse email. Un score de correspondance est ensuite calculé en fonction d'attributs secondaires (nom, prénom). Si le score dépasse 85\%, la fusion est automatique. Entre 70\% et 85\%, une validation manuelle est requise. En-dessous de 70\%, aucune action de fusion n'est entreprise.
 
 \subsection{Algorithme de Sélection du Record Maître}
 
@@ -427,8 +412,6 @@ Lors de la fusion de deux comptes clients, le système doit également gérer la
 \begin{tabular}{|p{6cm}|p{8.5cm}|}
 \hline
 \rowcolor{lightblue} \textbf{Type d'objet} & \textbf{Stratégie de réassignation} \\
-\hline
-Consent\_\_c & Consolidation avec conservation de l'opt-in le plus récent pour chaque canal \\
 \hline
 Order & Réassignation simple au compte maître \\
 \hline

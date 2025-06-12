@@ -104,10 +104,10 @@ L'écosystème commercial d'AMI Paris repose sur trois piliers principaux :
 \begin{itemize}
     \item \textbf{E-commerce} : Site officiel développé sur Shopify.
     \item \textbf{Retail physique} : Boutiques gérées via le système de caisse et de gestion CEGID.
-    \item \textbf{CRM \& marketing automation} : Basé sur Salesforce, pour centraliser les données clients, segmenter, et automatiser les campagnes.
+    \item \textbf{CRM \& marketing} : Précédemment basé sur Ometria, avec des capacités limitées et des problèmes d'intégration.
 \end{itemize}
 
-Chaque canal collecte des données clients qui doivent être centralisées et exploitées pour personnaliser l'expérience utilisateur.
+Chaque canal collecte des données clients qui étaient difficilement centralisées et exploitées efficacement, créant des silos d'information et limitant la personnalisation de l'expérience utilisateur.
 
 \newpage
 \section{Analyse de l'Existant}
@@ -116,16 +116,28 @@ Avant le projet, les systèmes d'information d'AMI Paris étaient cloisonnés :
 \begin{itemize}
     \item Shopify hébergeait les données clients web (emails, commandes).
     \item Cegid stockait les achats en boutique et les informations transactionnelles physiques.
-    \item Salesforce était utilisé pour le CRM, mais de façon partielle, sans consolidation complète des données.
+    \item Ometria était utilisé comme CRM et outil marketing, mais avec des capacités limitées.
 \end{itemize}
 
 \begin{mdframed}[backgroundcolor=warningorange, linewidth=0pt, innerleftmargin=10pt, innerrightmargin=10pt]
-Cette segmentation empêchait une vision 360° du client, limitant la pertinence des campagnes marketing.
+Cette segmentation empêchait une vision 360° du client, limitant la pertinence des campagnes marketing. De plus, Ometria présentait des problèmes d'intégration avec les autres systèmes et des capacités fonctionnelles limitées.
 \end{mdframed}
 
 \subsection{Systèmes d'Information Actuels}
 
-Les SI d'AMI Paris étaient donc fragmentés, chaque système fonctionnant en silo et rendant difficile la centralisation et l'exploitation optimale des données clients.
+Les SI d'AMI Paris étaient fragmentés, chaque système fonctionnant en silo et rendant difficile la centralisation et l'exploitation optimale des données clients. Contrairement à ce qui a pu être indiqué précédemment, AMI Paris ne disposait pas de Salesforce avant ce projet. L'implémentation de Salesforce a été réalisée entièrement from scratch dans le cadre du projet AMIgo.
+
+\subsection{Limitations d'Ometria}
+
+Avant l'adoption de Salesforce, AMI Paris utilisait Ometria comme solution CRM et marketing, avec plusieurs limitations majeures :
+
+\begin{itemize}
+    \item Gestion déficiente des intégrations entrantes et sortantes avec les autres systèmes
+    \item Fonctionnalités marketing limitées et peu personnalisables
+    \item Difficultés dans la réconciliation des données client entre canaux
+    \item Interface utilisateur peu intuitive et workflows complexes
+    \item Reporting limité et manque de capacités analytiques avancées
+\end{itemize}
 
 \subsection{Défis de l'Intégration Multicanale}
 
@@ -135,7 +147,7 @@ Les principaux défis rencontrés dans l'intégration multicanale incluaient :
     \item Hétérogénéité des formats de données (codes pays/langues différents).
     \item Synchronisation en temps réel souhaitée (webhooks Shopify, batchs Cegid).
     \item Détection des doublons clients entre les sources.
-    \item Respect des contraintes Salesforce (picklists restreintes, triggers, opt-ins).
+    \item Absence totale d'infrastructure Salesforce nécessitant une mise en place complète
     \item Gestion des mises à jour partielles sans écraser les données de meilleure qualité.
 \end{itemize}
 
@@ -212,6 +224,15 @@ Le projet s'est articulé autour de plusieurs phases clés :
     \item \textbf{Phase de mise en production} : Déploiement contrôlé via Change Sets, monitoring et ajustements post go-live.
 \end{itemize}
 \end{mdframed}
+
+\subsection{Timeline des Sprints}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{chapters/images/timeline_board.png}
+    \caption{Planification des sprints et lots fonctionnels du projet AMIgo}
+    \label{fig:sprint-timeline}
+\end{figure}
 
 \section{Conclusion}
 

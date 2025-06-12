@@ -6,10 +6,25 @@
 % Required packages
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
-\usepackage{natbib} % Load natbib before babel/french as warned
 \usepackage[french]{babel}
 \usepackage{graphicx}
 \usepackage{adjustbox}
+\usepackage{csquotes} % Recommandé avec biblatex
+\usepackage[
+  backend=biber,
+  style=authoryear-comp,  % Compacte les références répétées
+  sorting=nyt,            % Nom, année, titre
+  language=french,
+  giveninits=true,        % Initiales des prénoms
+  maxbibnames=3,
+  maxcitenames=1,
+  url=true,
+  doi=false,
+  isbn=false
+]{biblatex}
+\addbibresource{references.bib}
+% Réduit l'espacement entre les entrées
+\AtBeginBibliography{\small\setlength{\itemsep}{0.4em}}
 
 % Required for exact figure placement
 \usepackage{float}
@@ -541,11 +556,8 @@ Ce rapport est organisé selon la structure suivante :
 \cleardoublepage
 \input{chapters/chapitre4.tex}
 
-%\cleardoublepage
-%\input{chapters/chapitre5.tex}
-
-%\cleardoublepage
-%\input{chapters/chapitre6.tex}
+\cleardoublepage
+\input{chapters/conclusion.tex}
 
 % Conclusion will be added later
 %\cleardoublepage
@@ -563,9 +575,8 @@ Ce rapport est organisé selon la structure suivante :
 %[Perspectives ici]
 
 % Bibliography
-%\bibliographystyle{plainnat}
-%\bibliography{latex/references}
-%\addcontentsline{toc}{chapter}{Bibliographie}
+\nocite{*} % Liste toutes les références même non citées
+\printbibliography[heading=bibintoc,title={Bibliographie}]
 
 % Appendices
 %\begin{appendices}
