@@ -42,7 +42,7 @@
 - **Chapitre 4: Intégration et Chargement des Données**: ✅ Complete with architecture diagrams, sequence diagrams, ETL process flow, and data model visuals based on actual project artifacts
 - **Chapitre 5: Expérience Client et Marketing**: ✅ Template created with formatted content
 - **Chapitre 6: Résultats et Évaluation**: ✅ Template created with formatted content
-- **Conclusion Générale**: ⚠️ Basic structure only, needs content
+- **Conclusion**: ✅ Complete - transformed into a concise section rather than a separate chapter
 
 ### Next Steps
 - [ ] Fill in actual project data and metrics in remaining chapters
@@ -53,6 +53,7 @@
 - [ ] Create additional figures and diagrams for other chapters
 - [ ] Complete the bibliography with relevant references
 - [x] Finalize the glossary and abbreviations section
+- [x] Revise report structure for better flow (title, conclusion)
 - [ ] Review and proofread all content
 - [ ] Generate final PDF and prepare for submission
 
@@ -73,3 +74,4 @@
 - **2025-06-12**: Updated the Mid_Term presentation content to accurately reflect the AMIgo Client Engagement project details while preserving the original styling and layout.
 - **2025-06-13**: Corrected the "Analyse de l'Existant" section in Chapter 1 and related content in Chapter 2 to accurately reflect that AMI Paris was previously using Ometria (not Salesforce) as their CRM and marketing tool. Added details about Ometria's limitations and clarified that Salesforce was implemented from scratch as part of the AMIgo project.
 - **2025-06-14**: Updated the GDPR consent management sections to reflect actual implementation: removed references to non-existent Consent__c object, added details about preference management via Account fields, highlighted the importance of TransformationLogic with Transcode method for preferences, and clarified that email is the sole method used for client reconciliation.
+- **2025-06-15**: Made significant report structure improvements: shortened the title to "AMIgo: Référentiel Client Unifié Omnicanal pour AMI Paris", and transformed the conclusion from a separate chapter with multiple sections into a concise single-paragraph section at the end of the main content for better flow and readability.
